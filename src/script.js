@@ -16,7 +16,8 @@ class Player {
 		this.speedY = 0
 		this.acceleration = 0.5
 		this.retardation = 0.25
-		this.topSpeed = 10
+		this.topSpeed = 5
+		this.shot = true
 
 		// directions
 		this.up = false
@@ -27,15 +28,24 @@ class Player {
 	}
 
 	draw() {
-		context.fillRect(this.x, this.y, this.width, this.height)
+		context.beginPath()
+		context.rect(this.x, this.y, this.width, this.height)
+		context.stroke()
 	}
 }
 
-class ball { // todo: make ball that the player can shot
-	constructor() {
+class Ball { // todo: make ball that the player can shot
+	constructor(x, y) {
+		this.radius = 10
+		this.x = x
+		this.y = y
+		this.type = "ball"
 	}
 
 	draw() {
+		context.beginPath()
+		context.arc(this.x, this.y, this.radius, 0, 2 * Math.PI)
+		context.stroke()
 	}
 }
 
@@ -49,6 +59,9 @@ const keys = {
 function render() {
 	canvas.width = canvas.width // "reloads" canvas
 	gameObjects.forEach((object) => {
+		if (object.type === "ball") {
+			object.x += 10
+		}
 		object.draw()
 	})
 }
@@ -114,6 +127,7 @@ document.onkeyup = (event) => {
 	if (event.key === " ") {
 		player.space = false
 		spaceBar.style.backgroundColor = "#fff"
+		player.shot = true
 	}
 }
 
@@ -201,7 +215,10 @@ setInterval(() => {
 	}
 
 	// attack?
-	if (player.space) { // todo: attack?
+	if (player.space && player.shot) {
+		ball = new Ball(player.x + player.width / 2, player.y + player.height / 2)
+		gameObjects.push(ball)
+		player.shot = false
 	}
 
 	render()
