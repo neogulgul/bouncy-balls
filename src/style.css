@@ -16,6 +16,12 @@ canvas {
 	background-color: #eee;
 }
 
+#speedometer {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+}
+
 #keys {
 	position: absolute;
 	bottom: 10px;
@@ -38,4 +44,8 @@ canvas {
 	width: 50px;
 	height: 50px;
 	border: 1px solid #000;
+}
+
+#space {
+	width: 100%;
 }
