@@ -16,8 +16,10 @@ class Player {
 		this.speedY = 0
 		this.acceleration = 0.5
 		this.retardation = 0.25
-		this.topSpeed = 5
+		this.topSpeed = 6
 		this.shot = true
+		this.bullets = 0
+		this.score = 0
 		this.type = "player"
 
 		// directions
@@ -37,12 +39,13 @@ class Player {
 }
 
 class Ball { // todo: make ball that the player can shot
-	constructor(x, y, direction) {
+	constructor(x, y, speedX, speedY) {
 		this.radius = 10
 		this.x = x
 		this.y = y
-		this.direction = direction
-		this.speed = 10
+		this.speedX = speedX
+		this.speedY = speedY
+		this.speed = 8
 		this.type = "ball"
 	}
 
@@ -58,21 +61,52 @@ const keys = {
 	down: ["s", "ArrowDown", "k"],
 	left: ["a", "ArrowLeft", "j"],
 	right: ["d", "ArrowRight", "l"],
+	space: [" ", "Enter"]
 }
 
 function render() {
 	canvas.width = canvas.width // "reloads" canvas
 	gameObjects.forEach((object) => {
-		if (object.type === "ball") {
-			if (object.direction === "up") {
-				object.y -= object.speed
-			} else if (object.direction === "down") {
-				object.y += object.speed
-			} else if (object.direction === "left") {
-				object.x -= object.speed
-			} else if (object.direction === "right") {
-				object.x += object.speed
+		if (object.type === "player") {
+			player.x += player.speedX
+			player.y += player.speedY
+
+			if (player.x < 0) {
+				player.x = 0
+				player.speedX = -player.speedX * 2
 			}
+
+			if (player.x > canvas.width - player.width) {
+				player.x = canvas.width - player.width
+				player.speedX = -player.speedX * 2
+			}
+
+			if (player.y < 0) {
+				player.y = 0
+				player.speedY = -player.speedY * 2
+			}
+
+			if (player.y > canvas.height - player.height) {
+				player.y = canvas.height - player.height
+				player.speedY = -player.speedY * 2
+			}
+		}
+
+		if (object.type === "ball") {
+			if(object.y < 0) {
+				object.speedY = -object.speedY
+			}
+			if(object.y > canvas.height) {
+				object.speedY = -object.speedY
+			}
+			if(object.x < 0) {
+				object.speedX = -object.speedX
+			}
+			if(object.x > canvas.width) {
+				object.speedX = -object.speedX
+			}
+			object.x += object.speedX
+			object.y += object.speedY
 		}
 		object.draw()
 	})
@@ -113,7 +147,7 @@ document.onkeydown = (event) => {
 		rightArrow.style.backgroundColor = "#999"
 	}
 
-	if (event.key === " ") {
+	if (keys.space.includes(event.key)) {
 		player.space = true
 		spaceBar.style.backgroundColor = "#999"
 	}
@@ -140,7 +174,7 @@ document.onkeyup = (event) => {
 		rightArrow.style.backgroundColor = "#fff"
 	}
 
-	if (event.key === " ") {
+	if (keys.space.includes(event.key)) {
 		player.space = false
 		spaceBar.style.backgroundColor = "#fff"
 		player.shot = true
@@ -207,41 +241,59 @@ setInterval(() => {
 	speedometerX.innerText = player.speedX
 	speedometerY.innerText = player.speedY
 
+	/*
 	player.x += player.speedX
 	player.y += player.speedY
 
 	if (player.x < 0) {
 		player.x = 0
-		player.speedX = 0
+		player.speedX = -player.speedX * 2
 	}
 
 	if (player.x > canvas.width - player.width) {
 		player.x = canvas.width - player.width
-		player.speedX = 0
+		player.speedX = -player.speedX * 2
 	}
 
 	if (player.y < 0) {
 		player.y = 0
-		player.speedY = 0
+		player.speedY = -player.speedY * 2
 	}
 
 	if (player.y > canvas.height - player.height) {
 		player.y = canvas.height - player.height
-		player.speedY = 0
+		player.speedY = -player.speedY * 2
 	}
+	*/
 
 	// attack?
 	if (player.space && player.shot) {
-		ball = new Ball(player.x + player.width / 2, player.y + player.height / 2, player.direction)
-		gameObjects.push(ball)
-		player.shot = false
+		if (player.speedX !==  0 || player.speedY !== 0) {
+			ball = new Ball(player.x + player.width / 2, player.y + player.height / 2, player.speedX, player.speedY)
+			gameObjects.push(ball)
+			player.shot = false
+			player.bullets ++
+			document.querySelector("#bullets").innerText = `Bullets: ${player.bullets}/${10+10*player.score}`
+			if (player.bullets >= 10 + 10 * player.score){
+				for(i = 0; i < gameObjects.length; i++){
+					if(gameObjects[i].type === "ball"){
+						gameObjects.splice(i)
+					}
+
+				}
+				player.score ++
+				document.querySelector("#score").innerText = `Score: ${player.score}`
+				player.bullets = 0
+			}
+			console.log(player.bullets, player.score)
+		}
 	}
 
 	// display gameObjects
-	document.querySelector("#game-objects").innerText = ""
+	/*document.querySelector("#game-objects").innerText = ""
 	gameObjects.forEach((object) => {
 		document.querySelector("#game-objects").innerText += object.type
-	})
+	})*/
 
 	render()
 }, 1000 / 60) // "60fps"; refreshes 60 times per second

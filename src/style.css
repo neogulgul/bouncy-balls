@@ -29,6 +29,24 @@ canvas {
 	top: 10px;
 }
 
+#score {
+	position: absolute;
+	top: 10px;
+	right: 10px;
+}
+
+#bullets{
+	position: absolute;
+	top: 30px;
+	right: 10px;
+}
+
+#deaths{
+	position: absolute;
+	top: 50px;
+	right: 10px;
+}
+
 #keys {
 	position: absolute;
 	bottom: 10px;
