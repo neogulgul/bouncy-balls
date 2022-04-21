@@ -18,8 +18,10 @@ class Player {
 		this.retardation = 0.25
 		this.topSpeed = 5
 		this.shot = true
+		this.type = "player"
 
 		// directions
+		this.direction = "down"
 		this.up = false
 		this.down = false
 		this.left = false
@@ -35,10 +37,12 @@ class Player {
 }
 
 class Ball { // todo: make ball that the player can shot
-	constructor(x, y) {
+	constructor(x, y, direction) {
 		this.radius = 10
 		this.x = x
 		this.y = y
+		this.direction = direction
+		this.speed = 10
 		this.type = "ball"
 	}
 
@@ -50,17 +54,25 @@ class Ball { // todo: make ball that the player can shot
 }
 
 const keys = {
-	up: ["w", "ArrowUp"],
-	down: ["s", "ArrowDown"],
-	left: ["a", "ArrowLeft"],
-	right: ["d", "ArrowRight"],
+	up: ["w", "ArrowUp", "i"],
+	down: ["s", "ArrowDown", "k"],
+	left: ["a", "ArrowLeft", "j"],
+	right: ["d", "ArrowRight", "l"],
 }
 
 function render() {
 	canvas.width = canvas.width // "reloads" canvas
 	gameObjects.forEach((object) => {
 		if (object.type === "ball") {
-			object.x += 10
+			if (object.direction === "up") {
+				object.y -= object.speed
+			} else if (object.direction === "down") {
+				object.y += object.speed
+			} else if (object.direction === "left") {
+				object.x -= object.speed
+			} else if (object.direction === "right") {
+				object.x += object.speed
+			}
 		}
 		object.draw()
 	})
@@ -79,21 +91,25 @@ const spaceBar = document.querySelector("#space")
 document.onkeydown = (event) => {
 	if (keys.up.includes(event.key)) {
 		player.up = true
+		player.direction = "up"
 		upArrow.style.backgroundColor = "#999"
 	}
 
 	if (keys.down.includes(event.key)) {
 		player.down = true
+		player.direction = "down"
 		downArrow.style.backgroundColor = "#999"
 	}
 
 	if (keys.left.includes(event.key)) {
 		player.left = true
+		player.direction = "left"
 		leftArrow.style.backgroundColor = "#999"
 	}
 
 	if (keys.right.includes(event.key)) {
 		player.right = true
+		player.direction = "right"
 		rightArrow.style.backgroundColor = "#999"
 	}
 
@@ -216,10 +232,16 @@ setInterval(() => {
 
 	// attack?
 	if (player.space && player.shot) {
-		ball = new Ball(player.x + player.width / 2, player.y + player.height / 2)
+		ball = new Ball(player.x + player.width / 2, player.y + player.height / 2, player.direction)
 		gameObjects.push(ball)
 		player.shot = false
 	}
+
+	// display gameObjects
+	document.querySelector("#game-objects").innerText = ""
+	gameObjects.forEach((object) => {
+		document.querySelector("#game-objects").innerText += object.type
+	})
 
 	render()
 }, 1000 / 60) // "60fps"; refreshes 60 times per second
