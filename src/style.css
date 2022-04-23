@@ -1,6 +1,14 @@
+@font-face {
+	font-family: "Enter Command";
+	src: url(./EnterCommand.ttf);
+}
+
 * {
 	margin: 0;
 	padding: 0;
+	font-family: "Enter Command";
+	font-size: 25px;
+	user-select: none;
 }
 
 body {
@@ -8,42 +16,33 @@ body {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
 }
 
 canvas {
-	border: 1px solid #ddd;
+	width: 80vw;
+	border: 0.1vw solid #ddd;
 	background-color: #eee;
 }
 
-#speedometer {
+.info {
 	position: absolute;
+	width: 150px;
+}
+
+.info div {
+	display: flex;
+	justify-content: space-between;
+}
+
+#player {
 	top: 10px;
 	left: 10px;
 }
 
-#game-objects {
-	position: absolute;
+#game {
 	top: 10px;
-}
-
-#score {
-	position: absolute;
-	top: 10px;
-	right: 10px;
-}
-
-#bullets{
-	position: absolute;
-	top: 30px;
-	right: 10px;
-}
-
-#deaths{
-	position: absolute;
-	top: 50px;
 	right: 10px;
 }
 
@@ -66,11 +65,22 @@ canvas {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	width: 50px;
-	height: 50px;
-	border: 1px solid #000;
+	width: 40px;
+	height: 40px;
+	border: 0.1vw solid #000;
+	background-color: #fff;
 }
 
-#space {
-	width: 100%;
+.key svg {
+	width: 50%;
+	height: 50%;
+}
+
+.key.active {
+	background-color: #000;
+	fill: #fff;
+}
+
+#ball {
+	border-radius: 50%;
 }

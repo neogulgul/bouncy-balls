@@ -3,19 +3,23 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Canvas</title>
-	<link rel="stylesheet" href="style.css">
+	<link rel="icon" href="./favicon.svg">
+	<title>Bouncy Balls</title>
+	<link rel="stylesheet" href="./style.css">
 </head>
 <body>
 	<canvas></canvas>
-	<div id="speedometer">
-		<div>speedX: <span>0</span></div>
-		<div>speedY: <span>0</span></div>
+	<div id="player" class="info">
+		<div>position.x:<span>0</span></div>
+		<div>position.y:<span>0</span></div>
+		<div>velocity.x:<span>0</span></div>
+		<div>velocity.y:<span>0</span></div>
 	</div>
-	<div id="game-objects"></div>
-	<div id="score">Score: 0</div>
-	<div id="bullets">Bullets: 0/10</div>
-	<div id="deaths">Deaths: 0</div>
+	<div id="game" class="info">
+		<div>Score:<span>0</span></div>
+		<div>Balls:<span>0</span></div>
+		<div>Time:<span>0</span></div>
+	</div>
 	<div id="keys">
 		<div class="row">
 			<div class="key" id="up">
@@ -33,10 +37,10 @@
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 13H4v-2h8V4l8 8-8 8z"/></svg>
 			</div>
 		</div>
-		<div class="key" id="space">
-			<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M4 9v4h16V9h2v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V9h2z"/></svg>
+		<div class="row">
+			<div class="key" id="ball"></div>
 		</div>
 	</div>
-	<script src="script.js"></script>
+	<script src="./script.js"></script>
 </body>
 </html>
