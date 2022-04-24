@@ -1,4 +1,8 @@
-const canvas = document.querySelector("canvas")
+function getElement(element) {
+	return document.querySelector(element)
+}
+
+const canvas = getElement("canvas")
 const context = canvas.getContext("2d")
 
 canvas.width = 1920
@@ -170,9 +174,9 @@ const game = {
 	},
 
 	updateGameInfo: () => {
-		document.querySelector("#game div:nth-child(1) span").innerText = game.score
-		document.querySelector("#game div:nth-child(2) span").innerText = game.balls + "/" + (10 + 10 * game.score)
-		document.querySelector("#game div:nth-child(3) span").innerText = Math.floor(game.time)
+		getElement("#game div:nth-child(1) span").innerText = game.score
+		getElement("#game div:nth-child(2) span").innerText = game.balls + "/" + (10 + 10 * game.score)
+		getElement("#game div:nth-child(3) span").innerText = Math.floor(game.time)
 	}
 }
 
@@ -193,46 +197,131 @@ class Player {
 		this.maxVelocity = 6
 		this.ballVelocity = 10
 		this.alive = true
-		this.color = "blue"
 		this.type = "player"
-
-		this.up 	= false
-		this.down 	= false
-		this.left 	= false
-		this.right 	= false
-		this.ball 	= false
-		this.balled = false
+		this.move = {
+			up: false,
+			down: false,
+			left: false,
+			right: false
+		}
+		this.shoot = {
+			up: false,
+			down: false,
+			left: false,
+			right: false
+		}
+		this.shootTimer = 0
 	}
 
-	balling() {
-		let radius = 10
+	shootBall() {
 		let x = this.position.x + this.width / 2
 		let y = this.position.y + this.height / 2
 		let velocityX = 0
 		let velocityY = 0
 
-		if (this.left) {
-			x -= radius * 2 + this.width / 2
-			velocityX = -this.ballVelocity
-		}
-		if (this.right) {
-			x += radius * 2 + this.width / 2
-			velocityX = this.ballVelocity
-		}
-		if (this.up) {
-			y -= radius * 2 + this.height / 2
+		if (this.shoot.up) {
+			y -= 2 + this.height / 2
 			velocityY = -this.ballVelocity
 		}
-		if (this.down) {
-			y += radius * 2 + this.height / 2
+		if (this.shoot.down) {
+			y += 2 + this.height / 2
 			velocityY = this.ballVelocity
 		}
+		if (this.shoot.left) {
+			x -= 2 + this.width / 2
+			velocityX = -this.ballVelocity
+		}
+		if (this.shoot.right) {
+			x += 2 + this.width / 2
+			velocityX = this.ballVelocity
+		}
 
-		ball = new Ball(radius, x, y, velocityX, velocityY, this.color)
+		let ball = new Ball(x, y, velocityX, velocityY)
 		game.objects.push(ball)
 	}
 
 	update() {
+		// acceleration / deceleration
+		// up
+		if (this.move.up) {
+			this.velocity.y -= this.acceleration
+		} else if (this.velocity.y < 0) {
+			this.velocity.y += this.deceleration
+		}
+		// down
+		if (this.move.down) {
+			this.velocity.y += this.acceleration
+		} else if (this.velocity.y > 0) {
+			this.velocity.y -= this.deceleration
+		}
+		// left
+		if (this.move.left) {
+			this.velocity.x -= this.acceleration
+		} else if (this.velocity.x < 0) {
+			this.velocity.x += this.deceleration
+		}
+		// right
+		if (this.move.right) {
+			this.velocity.x += this.acceleration
+		} else if (this.velocity.x > 0) {
+			this.velocity.x -= this.deceleration
+		}
+		// up && down
+		if (this.move.up && this.move.down) {
+			if (this.velocity.y < 0) {
+				this.velocity.y += this.deceleration
+			} else if (this.velocity.y > 0) {
+				this.velocity.y -= this.deceleration
+			}
+		}
+		// left && right
+		if (this.move.left && this.move.right) {
+			if (this.velocity.x < 0) {
+				this.velocity.x += this.deceleration
+			} else if (this.velocity.x > 0) {
+				this.velocity.x -= this.deceleration
+			}
+		}
+
+		// limiting maxVelocity
+		// up
+		if (this.velocity.y < -this.maxVelocity) {
+			this.velocity.y = -this.maxVelocity
+		}
+		// down
+		if (this.velocity.y > this.maxVelocity) {
+			this.velocity.y = this.maxVelocity
+		}
+		// left
+		if (this.velocity.x < -this.maxVelocity) {
+			this.velocity.x = -this.maxVelocity
+		}
+		// right
+		if (this.velocity.x > this.maxVelocity) {
+			this.velocity.x = this.maxVelocity
+		}
+
+		// detect shot
+		if (this.shootTimer === 0 && (this.shoot.up || this.shoot.down || this.shoot.left || this.shoot.right)) {
+			this.shootBall()
+			this.shootTimer++
+			game.balls++
+			if (game.balls === 10 + 10 * game.score) {
+				game.balls = 0
+				game.score++
+				for (let i = 0; i < game.objects.length; i++) {
+					if (game.objects[i].type === "ball") {
+						game.objects.splice(i)
+					}
+				}
+			}
+		} else if (this.shootTimer > 0) {
+			this.shootTimer++
+			if (this.shootTimer === 30) {
+				this.shootTimer = 0
+			}
+		}
+
 		game.collision(this)
 
 		this.position.x += this.velocity.x
@@ -261,8 +350,8 @@ class Obstacle {
 }
 
 class Ball {
-	constructor(radius, x, y, velocityX, velocityY, color) {
-		this.radius = radius
+	constructor(x, y, velocityX, velocityY) {
+		this.radius = BLOCKLENGTH / 10
 		this.position = {
 			x: x,
 			y: y
@@ -271,7 +360,6 @@ class Ball {
 			x: velocityX,
 			y: velocityY
 		}
-		this.color = color
 		this.type = "ball"
 	}
 
@@ -285,7 +373,7 @@ class Ball {
 	draw() {
 		context.beginPath()
 		context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
-		context.fillStyle = this.color
+		context.fillStyle = "black"
 		context.fill()
 	}
 }
@@ -294,75 +382,94 @@ class Ball {
 	keypresses
 ================================================== */
 
-const upKey = document.querySelector("#up")
-const downKey = document.querySelector("#down")
-const leftKey = document.querySelector("#left")
-const rightKey = document.querySelector("#right")
-const ballKey = document.querySelector("#ball")
-
 const keys = {
-	up: 	["w", "W", "i", "I", "ArrowUp"],
-	down: 	["s", "S", "k", "K", "ArrowDown"],
-	left: 	["a", "A", "j", "J", "ArrowLeft"],
-	right: 	["d", "D", "l", "L", "ArrowRight"],
-	ball: 	[" ", "Enter"],
+	move: {
+		up: "w",
+		down: "s",
+		left: "a",
+		right: "d"
+	},
+	shoot: {
+		up: "i",
+		down: "k",
+		left: "j",
+		right: "l"
+	},
 }
 
 document.onkeydown = (event) => {
-	//console.log(`"${event.key}"`) // remove later
-	if (keys.up.includes(event.key)) {
-		player.up = true
-		upKey.classList.add("active")
+	// move
+	if (keys.move.up.includes(event.key)) {
+		player.move.up = true
+		getElement("#move .up").classList.add("active")
+	}
+	if (keys.move.down.includes(event.key)) {
+		player.move.down = true
+		getElement("#move .down").classList.add("active")
+	}
+	if (keys.move.left.includes(event.key)) {
+		player.move.left = true
+		getElement("#move .left").classList.add("active")
+	}
+	if (keys.move.right.includes(event.key)) {
+		player.move.right = true
+		getElement("#move .right").classList.add("active")
 	}
 
-	if (keys.down.includes(event.key)) {
-		player.down = true
-		downKey.classList.add("active")
+	// shoot
+	if (keys.shoot.up.includes(event.key)) {
+		player.shoot.up = true
+		getElement("#shoot .up").classList.add("active")
 	}
-
-	if (keys.left.includes(event.key)) {
-		player.left = true
-		leftKey.classList.add("active")
+	if (keys.shoot.down.includes(event.key)) {
+		player.shoot.down = true
+		getElement("#shoot .down").classList.add("active")
 	}
-
-	if (keys.right.includes(event.key)) {
-		player.right = true
-		rightKey.classList.add("active")
+	if (keys.shoot.left.includes(event.key)) {
+		player.shoot.left = true
+		getElement("#shoot .left").classList.add("active")
 	}
-
-	if (keys.ball.includes(event.key)) {
-		player.ball = true
-		ballKey.classList.add("active")
+	if (keys.shoot.right.includes(event.key)) {
+		player.shoot.right = true
+		getElement("#shoot .right").classList.add("active")
 	}
 }
 
 document.onkeyup = (event) => {
-	if (keys.up.includes(event.key)) {
-		player.up = false
-		upKey.classList.remove("active")
+	// move
+	if (keys.move.up.includes(event.key)) {
+		player.move.up = false
+		getElement("#move .up").classList.remove("active")
+	}
+	if (keys.move.down.includes(event.key)) {
+		player.move.down = false
+		getElement("#move .down").classList.remove("active")
+	}
+	if (keys.move.left.includes(event.key)) {
+		player.move.left = false
+		getElement("#move .left").classList.remove("active")
+	}
+	if (keys.move.right.includes(event.key)) {
+		player.move.right = false
+		getElement("#move .right").classList.remove("active")
 	}
 
-	if (keys.down.includes(event.key)) {
-		player.down = false
-		downKey.classList.remove("active")
+	// shoot
+	if (keys.shoot.up.includes(event.key)) {
+		player.shoot.up = false
+		getElement("#shoot .up").classList.remove("active")
 	}
-
-	if (keys.left.includes(event.key)) {
-		player.left = false
-		leftKey.classList.remove("active")
+	if (keys.shoot.down.includes(event.key)) {
+		player.shoot.down = false
+		getElement("#shoot .down").classList.remove("active")
 	}
-
-	if (keys.right.includes(event.key)) {
-		player.right = false
-		rightKey.classList.remove("active")
+	if (keys.shoot.left.includes(event.key)) {
+		player.shoot.left = false
+		getElement("#shoot .left").classList.remove("active")
 	}
-
-	if (keys.ball.includes(event.key)) {
-		player.ball = false
-		if (player.balled) {
-			player.balled = false
-		}
-		ballKey.classList.remove("active")
+	if (keys.shoot.right.includes(event.key)) {
+		player.shoot.right = false
+		getElement("#shoot .right").classList.remove("active")
 	}
 }
 
@@ -370,16 +477,11 @@ document.onkeyup = (event) => {
 	dev info
 ================================================== */
 
-const DOMx = document.querySelector("#player div:nth-child(1) span")
-const DOMy = document.querySelector("#player div:nth-child(2) span")
-const DOMvelocityX = document.querySelector("#player div:nth-child(3) span")
-const DOMvelocityY = document.querySelector("#player div:nth-child(4) span")
-
 function updateDevInfo() {
-	DOMx.innerText = player.position.x
-	DOMy.innerText = player.position.y
-	DOMvelocityX.innerText = player.velocity.x
-	DOMvelocityY.innerText = player.velocity.y
+	getElement("#player div:nth-child(1) span").innerText = player.position.x
+	getElement("#player div:nth-child(2) span").innerText = player.position.y
+	getElement("#player div:nth-child(3) span").innerText = player.velocity.x
+	getElement("#player div:nth-child(4) span").innerText = player.velocity.y
 }
 
 /* ==================================================
@@ -389,83 +491,7 @@ function updateDevInfo() {
 const FPS = 60
 
 setInterval(() => {
-	// acceleration / deceleration
-	// up
-	if (player.up) {
-		player.velocity.y -= player.acceleration
-	} else if (player.velocity.y < 0) {
-		player.velocity.y += player.deceleration
-	}
-	// down
-	if (player.down) {
-		player.velocity.y += player.acceleration
-	} else if (player.velocity.y > 0) {
-		player.velocity.y -= player.deceleration
-	}
-	// left
-	if (player.left) {
-		player.velocity.x -= player.acceleration
-	} else if (player.velocity.x < 0) {
-		player.velocity.x += player.deceleration
-	}
-	// right
-	if (player.right) {
-		player.velocity.x += player.acceleration
-	} else if (player.velocity.x > 0) {
-		player.velocity.x -= player.deceleration
-	}
-	// up && down
-	if (player.up && player.down) {
-		if (player.velocity.y < 0) {
-			player.velocity.y += player.deceleration
-		} else if (player.velocity.y > 0) {
-			player.velocity.y -= player.deceleration
-		}
-	}
-	// left && right
-	if (player.left && player.right) {
-		if (player.velocity.x < 0) {
-			player.velocity.x += player.deceleration
-		} else if (player.velocity.x > 0) {
-			player.velocity.x -= player.deceleration
-		}
-	}
-
-	// limiting maxVelocity
-	// up
-	if (player.velocity.y < -player.maxVelocity) {
-		player.velocity.y = -player.maxVelocity
-	}
-	// down
-	if (player.velocity.y > player.maxVelocity) {
-		player.velocity.y = player.maxVelocity
-	}
-	// left
-	if (player.velocity.x < -player.maxVelocity) {
-		player.velocity.x = -player.maxVelocity
-	}
-	// right
-	if (player.velocity.x > player.maxVelocity) {
-		player.velocity.x = player.maxVelocity
-	}
-
-	// balls
-	if (player.ball && !player.balled && (player.up || player.down || player.left || player.right)) {
-		player.balling()
-		player.balled = true
-		game.balls++
-		if (game.balls === 10 + 10 * game.score) {
-			game.balls = 0
-			game.score++
-			for (let i = 0; i < game.objects.length; i++) {
-				if (game.objects[i].type === "ball") {
-					game.objects.splice(i)
-				}
-			}
-		}
-	}
-
-	game.time += 1 / 60
+	game.time += 1 / FPS
 	game.render()
 	game.updateGameInfo()
 	updateDevInfo()
