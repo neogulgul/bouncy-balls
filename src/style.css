@@ -48,6 +48,10 @@ canvas {
 	right: 10px;
 }
 
+#next-wave {
+	color: red;
+}
+
 .keys {
 	--gap: 5px;
 	position: absolute;

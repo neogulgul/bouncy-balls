@@ -11,6 +11,7 @@ canvas.height = 1080
 const BLOCKLENGTH = 1920 / 16
 
 // todo: todos
+// todo: clean up
 
 /* ideas:
 singleplayer - avoid your own balls
@@ -34,15 +35,24 @@ const map1 = [
 ]
 
 const game = {
+	points: 0,
 	score: 0,
 	balls: 0,
 	time: 0,
+	nextWave: 10,
+	playing: false,
 	objects: [],
 	getTexture: (src) => {
 		image = new Image
 		image.src = `./textures/${src}`
 		return image
 	},
+
+	ballgorithm: () => {
+		return 5 + 5 * game.score
+	},
+
+	init: () => {},
 
 	start: () => {
 		game.mapLoad(map1)
@@ -90,14 +100,22 @@ const game = {
 			}
 		}
 
-		else if (object.type === "ball") {
-			// top || bottom
-			if (object.position.y + object.velocity.y < 0 || object.position.y + object.velocity.y > canvas.height) {
-				object.velocity.y = -object.velocity.y
+		else if (object.type === "ball") { // todo: do better
+			// top
+			if (object.position.y + object.velocity.y < 0) {
+				object.collision.bottom = true
 			}
-			// left || right
-			if (object.position.x + object.velocity.x < 0 || object.position.x + object.velocity.x > canvas.width) {
-				object.velocity.x = -object.velocity.x
+			// bottom
+			else if (object.position.y + object.velocity.y > canvas.height) {
+				object.collision.top = true
+			}
+			// left
+			if (object.position.x + object.velocity.x < 0) {
+				object.collision.right = true
+			}
+			// right
+			else if (object.position.x + object.velocity.x > canvas.width) {
+				object.collision.left = true
 			}
 		}
 
@@ -113,7 +131,7 @@ const game = {
 						object.position.y = obstacle.position.y - object.height
 						object.velocity.y = 0
 					} else if (object.type === "ball") {
-						object.velocity.y = -object.velocity.y
+						object.collision.top = true
 					}
 				}
 				// bottom
@@ -125,7 +143,7 @@ const game = {
 						object.position.y = obstacle.position.y + obstacle.height
 						object.velocity.y = 0
 					} else if (object.type === "ball") {
-						object.velocity.y = -object.velocity.y
+						object.collision.bottom = true
 					}
 				}
 				// left
@@ -137,7 +155,7 @@ const game = {
 						object.position.x = obstacle.position.x - object.width
 						object.velocity.x = 0
 					} else if (object.type === "ball") {
-						object.velocity.x = -object.velocity.x
+						object.collision.left = true
 					}
 				}
 				// right
@@ -149,8 +167,17 @@ const game = {
 						object.position.x = obstacle.position.x + obstacle.width
 						object.velocity.x = 0
 					} else if (object.type === "ball") {
-						object.velocity.x = -object.velocity.x
+						object.collision.right = true
 					}
+				}
+			}
+
+			else if (object.type === "ball") {
+				if (object.position.x > player.position.x - object.width &&
+					object.position.x < player.position.x + player.width &&
+					object.position.y > player.position.y - object.height &&
+					object.position.y < player.position.y + player.height) {
+					player.alive = false
 				}
 			}
 		})
@@ -168,9 +195,19 @@ const game = {
 	},
 
 	updateGameInfo: () => {
-		getElement("#game div:nth-child(1) span").innerText = game.score
-		getElement("#game div:nth-child(2) span").innerText = game.balls + "/" + (10 + 10 * game.score)
-		getElement("#game div:nth-child(3) span").innerText = Math.floor(game.time)
+		let paused = ""
+		if (!game.playing) {
+			paused = " (paused)"
+		}
+		getElement("#next-wave").style.display = "none"
+		if (game.nextWave < 10) {
+			getElement("#next-wave").style.display = "flex"
+			getElement("#next-wave span").innerText = Math.floor(game.nextWave)
+		}
+		getElement("#game div:nth-child(1) span").innerText = game.points
+		getElement("#game div:nth-child(2) span").innerText = game.score
+		getElement("#game div:nth-child(3) span").innerText = game.balls + "/" + game.ballgorithm()
+		getElement("#game div:nth-child(4) span").innerText = Math.floor(game.time) + paused
 	}
 }
 
@@ -214,19 +251,19 @@ class Player {
 		let velocityY = 0
 
 		if (this.shoot.up) {
-			y -= 2 + this.height / 2
+			y -= this.height
 			velocityY = -this.ballVelocity
 		}
 		if (this.shoot.down) {
-			y += 2 + this.height / 2
+			y += this.height
 			velocityY = this.ballVelocity
 		}
 		if (this.shoot.left) {
-			x -= 2 + this.width / 2
+			x -= this.width
 			velocityX = -this.ballVelocity
 		}
 		if (this.shoot.right) {
-			x += 2 + this.width / 2
+			x += this.width
 			velocityX = this.ballVelocity
 		}
 
@@ -296,24 +333,38 @@ class Player {
 		}
 
 		// detect shot
-		if (this.shootTimer === 0 && (this.shoot.up || this.shoot.down || this.shoot.left || this.shoot.right)) {
+		if (this.shootTimer === 0 && (this.shoot.up || this.shoot.down || this.shoot.left || this.shoot.right) && game.nextWave === 10) {
+			if (game.balls === 0) {
+				game.playing = true
+			}
 			this.shootBall()
 			this.shootTimer++
 			game.balls++
-			if (game.balls === 10 + 10 * game.score) {
-				game.balls = 0
-				game.score++
-				for (let i = 0; i < game.objects.length; i++) {
-					if (game.objects[i].type === "ball") {
-						game.objects.splice(i)
-					}
-				}
+			if (game.balls === game.ballgorithm()) {
+				game.nextWave -= 1 / FPS
 			}
 		} else if (this.shootTimer > 0) {
 			this.shootTimer++
 			if (this.shootTimer === 30) {
 				this.shootTimer = 0
 			}
+		}
+
+		if (game.nextWave < 10) {
+			game.nextWave -= 1 / FPS
+		}
+
+		if (game.nextWave <= 0) {
+			game.balls = 0
+			game.nextWave = 10
+			game.score++
+			game.points += 100 * game.score
+			for (let i = 0; i < game.objects.length; i++) {
+				if (game.objects[i].type === "ball") {
+					game.objects.splice(i)
+				}
+			}
+			game.playing = false
 		}
 
 		game.collision(this)
@@ -355,11 +406,68 @@ class Ball {
 			x: velocityX,
 			y: velocityY
 		}
+		this.collision = {
+			top: false,
+			bottom: false,
+			left: false,
+			rigth: false
+		}
+		this.ballVelocity = 10
 		this.type = "ball"
 	}
 
 	update() {
 		game.collision(this)
+
+		if (this.collision.top) { // todo: write better code
+			if (Math.random() > 0.5) {
+				this.velocity.y = -this.ballVelocity
+			} else {
+				this.velocity.y = -this.ballVelocity * 0.5
+			}
+			if (Math.random() > 0.5) {
+				this.velocity.x = this.ballVelocity
+			} else {
+				this.velocity.x = -this.ballVelocity
+			}
+			this.collision.top = false
+		} else if (this.collision.bottom) {
+			if (Math.random() > 0.5) {
+				this.velocity.y = this.ballVelocity
+			} else {
+				this.velocity.y = this.ballVelocity * 0.5
+			}
+			if (Math.random() > 0.5) {
+				this.velocity.x = this.ballVelocity
+			} else {
+				this.velocity.x = -this.ballVelocity
+			}
+			this.collision.bottom = false
+		} else if (this.collision.left) {
+			if (Math.random() > 0.5) {
+				this.velocity.x = -this.ballVelocity
+			} else {
+				this.velocity.x = -this.ballVelocity * 0.5
+			}
+			if (Math.random() > 0.5) {
+				this.velocity.y = this.ballVelocity
+			} else {
+				this.velocity.y = -this.ballVelocity
+			}
+			this.collision.left = false
+		} else if (this.collision.right) {
+			if (Math.random() > 0.5) {
+				this.velocity.x = this.ballVelocity
+			} else {
+				this.velocity.x = this.ballVelocity * 0.5
+			}
+			if (Math.random() > 0.5) {
+				this.velocity.y = this.ballVelocity
+			} else {
+				this.velocity.y = -this.ballVelocity
+			}
+			this.collision.right = false
+		}
 
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
@@ -483,7 +591,15 @@ function updateDevInfo() {
 const FPS = 60
 
 setInterval(() => {
-	game.time += 1 / FPS
+	if (!player.alive) { // probably going to change this?
+		return
+	}
+
+	game.points += game.balls * (1 + game.score)
+
+	if (game.playing) {
+		game.time += 1 / FPS
+	}
 	game.render()
 	game.updateGameInfo()
 	updateDevInfo()
