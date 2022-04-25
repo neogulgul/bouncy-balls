@@ -36,7 +36,7 @@ const map1 = [
 
 const game = {
 	points: 0,
-	score: 0,
+	wave: 0,
 	balls: 0,
 	time: 0,
 	nextWave: 10,
@@ -49,7 +49,7 @@ const game = {
 	},
 
 	ballgorithm: () => {
-		return 5 + 5 * game.score
+		return 5 * game.wave
 	},
 
 	init: () => {},
@@ -205,7 +205,7 @@ const game = {
 			getElement("#next-wave span").innerText = Math.floor(game.nextWave)
 		}
 		getElement("#game div:nth-child(1) span").innerText = game.points
-		getElement("#game div:nth-child(2) span").innerText = game.score
+		getElement("#game div:nth-child(2) span").innerText = game.wave
 		getElement("#game div:nth-child(3) span").innerText = game.balls + "/" + game.ballgorithm()
 		getElement("#game div:nth-child(4) span").innerText = Math.floor(game.time) + paused
 	}
@@ -336,6 +336,7 @@ class Player {
 		if (this.shootTimer === 0 && (this.shoot.up || this.shoot.down || this.shoot.left || this.shoot.right) && game.nextWave === 10) {
 			if (game.balls === 0) {
 				game.playing = true
+				game.wave++
 			}
 			this.shootBall()
 			this.shootTimer++
@@ -357,8 +358,7 @@ class Player {
 		if (game.nextWave <= 0) {
 			game.balls = 0
 			game.nextWave = 10
-			game.score++
-			game.points += 100 * game.score
+			game.points += 100 * game.wave
 			for (let i = 0; i < game.objects.length; i++) {
 				if (game.objects[i].type === "ball") {
 					game.objects.splice(i)
@@ -595,7 +595,7 @@ setInterval(() => {
 		return
 	}
 
-	game.points += game.balls * (1 + game.score)
+	game.points += game.balls * (1 + game.wave)
 
 	if (game.playing) {
 		game.time += 1 / FPS
