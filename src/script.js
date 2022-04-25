@@ -36,7 +36,7 @@ const map1 = [
 
 const game = {
 	points: 0,
-	wave: 0,
+	wave: 1,
 	balls: 0,
 	time: 0,
 	nextWave: 10,
@@ -336,7 +336,6 @@ class Player {
 		if (this.shootTimer === 0 && (this.shoot.up || this.shoot.down || this.shoot.left || this.shoot.right) && game.nextWave === 10) {
 			if (game.balls === 0) {
 				game.playing = true
-				game.wave++
 			}
 			this.shootBall()
 			this.shootTimer++
@@ -357,6 +356,7 @@ class Player {
 
 		if (game.nextWave <= 0) {
 			game.balls = 0
+			game.wave++
 			game.nextWave = 10
 			game.points += 100 * game.wave
 			for (let i = 0; i < game.objects.length; i++) {
