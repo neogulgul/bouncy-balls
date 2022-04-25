@@ -410,7 +410,7 @@ class Ball {
 			top: false,
 			bottom: false,
 			left: false,
-			rigth: false
+			right: false
 		}
 		this.ballVelocity = 10
 		this.type = "ball"
