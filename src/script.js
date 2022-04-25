@@ -104,58 +104,52 @@ const game = {
 		// obstacle collision
 		game.objects.forEach((obstacle) => {
 			if (obstacle.type === "obstacle") {
-				if (object.type === "player") {
-					// top
-					if (object.position.x > obstacle.position.x - object.width &&
-						object.position.x < obstacle.position.x + obstacle.width &&
-						object.position.y + object.velocity.y < obstacle.position.y &&
-						object.position.y + object.velocity.y > obstacle.position.y - object.height) {
+				// top
+				if (object.position.x > obstacle.position.x - object.width &&
+					object.position.x < obstacle.position.x + obstacle.width &&
+					object.position.y + object.velocity.y < obstacle.position.y &&
+					object.position.y + object.velocity.y > obstacle.position.y - object.height) {
+					if (object.type === "player") {
 						object.position.y = obstacle.position.y - object.height
 						object.velocity.y = 0
-					}
-					// bottom
-					else if (object.position.x > obstacle.position.x - object.width &&
-						object.position.x < obstacle.position.x + obstacle.width &&
-						object.position.y + object.velocity.y > obstacle.position.y + obstacle.height - object.height &&
-						object.position.y + object.velocity.y < obstacle.position.y + obstacle.height) {
-						object.position.y = obstacle.position.y + obstacle.height
-						object.velocity.y = 0
-					}
-					// left
-					if (object.position.y > obstacle.position.y - object.height &&
-						object.position.y < obstacle.position.y + obstacle.height &&
-						object.position.x + object.velocity.x < obstacle.position.x &&
-						object.position.x + object.velocity.x > obstacle.position.x - object.width) {
-						object.position.x = obstacle.position.x - object.width
-						object.velocity.x = 0
-					}
-					// right
-					else if (object.position.y > obstacle.position.y - object.height &&
-						object.position.y < obstacle.position.y + obstacle.height &&
-						object.position.x + object.velocity.x > obstacle.position.x + obstacle.width - object.width &&
-						object.position.x + object.velocity.x < obstacle.position.x + obstacle.width) {
-						object.position.x = obstacle.position.x + obstacle.width
-						object.velocity.x = 0
-					}
-				}
-
-				else if (object.type === "ball") { // todo: ball-obstacle collision is janky, fix it
-					// top || bottom
-					if (object.position.x + object.velocity.x > obstacle.position.x &&
-						object.position.x + object.velocity.x < obstacle.position.x + obstacle.width &&
-						object.position.y + object.velocity.y < obstacle.position.y + obstacle.height &&
-						object.position.y + object.velocity.y > obstacle.position.y) {
+					} else if (object.type === "ball") {
 						object.velocity.y = -object.velocity.y
 					}
-					// left || right
-					if (object.position.y + object.velocity.y > obstacle.position.y &&
-						object.position.y + object.velocity.y < obstacle.position.y + obstacle.height &&
-						object.position.x + object.velocity.x < obstacle.position.x + obstacle.width &&
-						object.position.x + object.velocity.x > obstacle.position.x) {
+				}
+				// bottom
+				else if (object.position.x > obstacle.position.x - object.width &&
+					object.position.x < obstacle.position.x + obstacle.width &&
+					object.position.y + object.velocity.y > obstacle.position.y + obstacle.height - object.height &&
+					object.position.y + object.velocity.y < obstacle.position.y + obstacle.height) {
+					if (object.type === "player") {
+						object.position.y = obstacle.position.y + obstacle.height
+						object.velocity.y = 0
+					} else if (object.type === "ball") {
+						object.velocity.y = -object.velocity.y
+					}
+				}
+				// left
+				if (object.position.y > obstacle.position.y - object.height &&
+					object.position.y < obstacle.position.y + obstacle.height &&
+					object.position.x + object.velocity.x < obstacle.position.x &&
+					object.position.x + object.velocity.x > obstacle.position.x - object.width) {
+					if (object.type === "player") {
+						object.position.x = obstacle.position.x - object.width
+						object.velocity.x = 0
+					} else if (object.type === "ball") {
 						object.velocity.x = -object.velocity.x
-						if (object.velocity.y !== 0) {
-							object.velocity.y = -object.velocity.y
-						}
+					}
+				}
+				// right
+				else if (object.position.y > obstacle.position.y - object.height &&
+					object.position.y < obstacle.position.y + obstacle.height &&
+					object.position.x + object.velocity.x > obstacle.position.x + obstacle.width - object.width &&
+					object.position.x + object.velocity.x < obstacle.position.x + obstacle.width) {
+					if (object.type === "player") {
+						object.position.x = obstacle.position.x + obstacle.width
+						object.velocity.x = 0
+					} else if (object.type === "ball") {
+						object.velocity.x = -object.velocity.x
 					}
 				}
 			}
@@ -351,10 +345,11 @@ class Obstacle {
 
 class Ball {
 	constructor(x, y, velocityX, velocityY) {
-		this.radius = BLOCKLENGTH / 10
+		this.width = BLOCKLENGTH / 4
+		this.height = BLOCKLENGTH / 4
 		this.position = {
-			x: x,
-			y: y
+			x: x - this.width / 2,
+			y: y - this.height / 2
 		}
 		this.velocity = {
 			x: velocityX,
@@ -371,10 +366,7 @@ class Ball {
 	}
 
 	draw() {
-		context.beginPath()
-		context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI)
-		context.fillStyle = "black"
-		context.fill()
+		context.drawImage(game.getTexture("ball.png"), this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
