@@ -235,6 +235,12 @@ class Player {
 			left: false,
 			right: false
 		}
+		this.collision = {
+			up: false,
+			down: false,
+			left: false,
+			right: false
+		}
 		this.shoot = {
 			up: false,
 			down: false,
