@@ -98,7 +98,7 @@ const game = {
 				object.position.x = canvas.width - object.width
 				object.velocity.x = 0
 			}
-		}
+		}	
 
 		else if (object.type === "ball") { // todo: do better
 			// top
