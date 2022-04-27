@@ -12,7 +12,7 @@
 	--background: #fff;
 	--background-transparent: rgba(0, 0, 0, 0.8);
 	--foreground: #000;
-	--border: 1px solid #bdbdbd;
+	--border: 0.1vw solid #bdbdbd;
 	--transition: 0.3s;
 }
 
@@ -47,6 +47,12 @@ body {
 
 canvas {
 	border: var(--border);
+	background-color: #eee;
+}
+
+#game {
+	max-width: 90vw;
+	max-height: 90vh;
 }
 
 #main-menu {
@@ -62,6 +68,16 @@ h1 {
 	text-align: center;
 	font-size: 3em;
 	letter-spacing: 10px;
+}
+
+h2 {
+	font-size: 1.5em;
+}
+
+h3 {
+	margin-bottom: 20px;
+	text-decoration: underline;
+	text-underline-offset: 10px;
 }
 
 .player-image {
@@ -81,6 +97,11 @@ h1 {
 .player-image:last-of-type {
 	right: -15px;
 	transform: rotate(-15deg);
+}
+
+.player-image.active {
+	margin-bottom: 10px;
+	opacity: 1;
 }
 
 #buttons {
@@ -118,35 +139,58 @@ button.one-player span {
 
 .map-selection {
 	position: absolute;
+	top: 0;
 	z-index: 100;
 	display: flex;
-	flex-wrap: wrap;
 	justify-content: center;
 	align-items: center;
 	gap: 50px;
 	width: 100vw;
-	height: 100vh;
+	height: 50vh;
 	padding: 25px;
 	transition: var(--transition);
 	background-color: var(--background-transparent);
+	color: var(--background);
+}
+
+.map-selection h2 {
+	position: absolute;
+	top: 15px;
 }
 
 .map {
-	width: 200px;
-	height: 200px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 15px;
+	padding: 15px;
+	border-radius: 15px;
+	cursor: pointer;
+	transition: var(--transition);
+}
+
+.map:hover canvas {
+	box-shadow: 0 0 10px 0 var(--background);
+}
+
+.map canvas {
+	width: 15vw;
+	max-width: 30vh;
+	height: 15vw;
+	max-height: 25vh;
 	border: var(--border);
 }
 
 .map-selection.one-player {
-	transform: translateX(-100%);
+	transform: translateY(-100%);
 }
 
 .map-selection.two-player {
-	transform: translateX(100%);
+	transform: translateY(-100%);
 }
 
 .map-selection.active {
-	transform: translateX(0);
+	transform: translateY(0);
 }
 
 #info-btn {
@@ -182,12 +226,6 @@ button.one-player span {
 
 #info-text.active {
 	display: flex;
-}
-
-.section h3 {
-	margin-bottom: 20px;
-	text-decoration: underline;
-	text-underline-offset: 10px;
 }
 
 .section p {

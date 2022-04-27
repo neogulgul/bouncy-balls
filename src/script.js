@@ -12,10 +12,11 @@ function getTexture(src) {
 	GAME
 ================================================== */
 
-const BLOCKLENGTH = 128
+const BLOCKLENGTH = 1920 / 16
 
-const keymap = {
-	player1: {
+const player1 = {
+	color: "green",
+	keys: {
 		move: {
 			up: "w",
 			down: "s",
@@ -23,8 +24,12 @@ const keymap = {
 			right: "d"
 		},
 		shoot: " " // space
-	},
-	player2: {
+	}
+}
+
+const player2 = {
+	color: "red",
+	keys: {
 		move: {
 			up: "i",
 			down: "k",
@@ -35,23 +40,30 @@ const keymap = {
 	}
 }
 
+/* map creation:
+p => player
+g => green obstacle
+r => red obstacle
+y => yellow obstacle
+*/
+
 const map1 = [
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
+	["g", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "p", "g"],
+	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
 ]
 
 const map2 = [
@@ -92,30 +104,50 @@ const map3 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
-let canvas, context
+let canvas, context, player, ball, obstacle
 
 const game = {
 	playing: false,
-	multiplayer: false,
+	players: 0,
 	objects: [],
 	canvas: undefined,
 	context: undefined,
 	start: () => {
 		game.playing = true
-		document.body.innerHTML = "<canvas></canvas>"
+		document.body.innerHTML = `<canvas id="game"></canvas>`
 		canvas = getElement("canvas")
-		canvas.width = 16 * 16
-		canvas.height = 16 * 16
+		canvas.width = 1920
+		canvas.height = 1920
 		context = canvas.getContext("2d")
 		game.loadmap(map1)
-
-		let player1 = new Player(0, 0, keymap.player1, "green")
-		game.objects.push(player1)
-		let player2 = new Player(0, 0, keymap.player2, "red")
-		game.objects.push(player2)
 	},
 	loadmap: (map) => {
 		for (let y = 0; y < map.length; y++) {
+			let row = map[y]
+			for (let x = 0; x < row.length; x++) {
+				let square = row[x]
+				let position = {
+					x: x * BLOCKLENGTH,
+					y: y * BLOCKLENGTH
+				}
+				if (square === "p") {
+					game.players++
+					player = new Player(position.x, position.y, player1.color, player1.keys)
+					if (game.players > 1) {
+						player = new Player(position.x, position.y, player2.color, player2.keys)
+					}
+					game.objects.push(player)
+				} else if (square === "g") {
+					obstacle = new Obstacle(position.x, position.y, "green", false)
+					game.objects.push(obstacle)
+				} else if (square === "r") {
+					obstacle = new Obstacle(position.x, position.y, "red", false)
+					game.objects.push(obstacle)
+				} else if (square === "y") {
+					obstacle = new Obstacle(position.x, position.y, "yellow", true)
+					game.objects.push(obstacle)
+				}
+			}
 		}
 	},
 	render: () => {
@@ -123,6 +155,45 @@ const game = {
 
 		game.objects.forEach((object) => {
 			object.draw()
+		})
+	},
+	collision: (object) => {
+		game.objects.forEach((obstacle) => {
+			if (obstacle.type === "obstacle") {
+				// note: directions relative to player; top is top of player, bottom is bottom of player, etc.
+				// top
+				if (object.position.x > obstacle.position.x - object.width &&
+					object.position.x < obstacle.position.x + obstacle.width &&
+					object.position.y + object.velocity.y > obstacle.position.y + obstacle.height - object.height &&
+					object.position.y + object.velocity.y < obstacle.position.y + obstacle.height) {
+					object.position.y = obstacle.position.y + obstacle.height
+					object.velocity.y = 0
+				}
+				// bottom
+				else if (object.position.x > obstacle.position.x - object.width &&
+					object.position.x < obstacle.position.x + obstacle.width &&
+					object.position.y + object.velocity.y < obstacle.position.y &&
+					object.position.y + object.velocity.y > obstacle.position.y - object.height) {
+					object.position.y = obstacle.position.y - object.height
+					object.velocity.y = 0
+				}
+				// left
+				if (object.position.y > obstacle.position.y - object.height &&
+					object.position.y < obstacle.position.y + obstacle.height &&
+					object.position.x + object.velocity.x > obstacle.position.x + obstacle.width - object.width &&
+					object.position.x + object.velocity.x < obstacle.position.x + obstacle.width) {
+					object.position.x = obstacle.position.x + obstacle.width
+					object.velocity.x = 0
+				}
+				// right
+				else if (object.position.y > obstacle.position.y - object.height &&
+					object.position.y < obstacle.position.y + obstacle.height &&
+					object.position.x + object.velocity.x < obstacle.position.x &&
+					object.position.x + object.velocity.x > obstacle.position.x - object.width) {
+					object.position.x = obstacle.position.x - object.width
+					object.velocity.x = 0
+				}
+			}
 		})
 	}
 }
@@ -132,13 +203,13 @@ const game = {
 ================================================== */
 
 class Player {
-	constructor(x, y, keys, color) {
-		this.position = {
-			x: x,
-			y: y
-		}
+	constructor(x, y, color, keys) {
 		this.width = BLOCKLENGTH / 2
 		this.height = BLOCKLENGTH / 2
+		this.position = {
+			x: x + this.width / 2,
+			y: y + this.height / 2
+		}
 		this.velocity = {
 			x: 0,
 			y: 0
@@ -165,7 +236,7 @@ class Player {
 	}
 
 	shoot() {
-		let ball = new Ball(getTexture(`ball_${this.color}.svg`), this.position.x, this.position.y)
+		let ball = new Ball(this.position.x, this.position.y, this.color)
 		game.objects.push(ball)
 	}
 
@@ -235,6 +306,8 @@ class Player {
 			this.shoot()
 		}
 
+		game.collision(this)
+
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
@@ -243,8 +316,7 @@ class Player {
 }
 
 class Ball {
-	constructor(texture, x, y) {
-		this.texture = texture
+	constructor(x, y, color) {
 		this.position = {
 			x: x,
 			y: y
@@ -255,26 +327,36 @@ class Ball {
 			x: 0,
 			y: 0
 		}
+		this.color = color
+		this.type = "ball"
 	}
 
 	draw() {
-		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
+		game.collision(this)
+
+		this.position.x += this.velocity.x
+		this.position.y += this.velocity.y
+
+		context.drawImage(getTexture(`ball_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
 class Obstacle {
-	constructor(texture, x, y, bounce) {
-		this.texture = texture
+	constructor(x, y, color, bounce) {
 		this.position = {
 			x: x,
 			y: y
 		}
 		this.width = BLOCKLENGTH
 		this.height = BLOCKLENGTH
+		this.color = color
 		this.bounce = bounce // true || false
+		this.type = "obstacle"
 	}
 
-	draw() {}
+	draw() {
+		context.drawImage(getTexture(`obstacle_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
+	}
 }
 
 /* ==================================================
@@ -347,13 +429,14 @@ setInterval(() => {
 	MAIN MENU
 ================================================== */
 
-const infoBtn = getElement("#info-btn")
-const infoText = getElement("#info-text")
-
-infoBtn.onclick = () => {
-	infoBtn.classList.toggle("active")
-	infoText.classList.toggle("active")
-}
+/* 	temporary 	*/
+const maps = document.querySelectorAll(".map")
+maps.forEach((map) => {
+	map.onclick = () => {
+		game.start()
+	}
+})
+/*				*/
 
 const buttonOnePlayer = getElement("button.one-player")
 const buttonTwoPlayer = getElement("button.two-player")
@@ -362,14 +445,32 @@ const mapsTwoPlayer = getElement(".map-selection.two-player")
 const playerOne = getElement(".player-image:first-of-type")
 const playerTwo = getElement(".player-image:last-of-type")
 
-// swaps player textures
 document.body.onclick = (event) => {
+	// swap player textures
 	if ([playerOne, playerTwo].includes(event.target)) {
 		let playerOneImage = playerOne.getAttribute("src")
 		let playerTwoImage = playerTwo.getAttribute("src")
 
 		playerOne.src = playerTwoImage
 		playerTwo.src = playerOneImage
+
+		if (player1.color === "green") {
+			player1.color = "red"
+			player2.color = "green"
+		} else if (player1.color === "red") {
+			player1.color = "green"
+			player2.color = "red"
+		}
+	}
+
+	// removes active class from one player map selection
+	if (![buttonOnePlayer, playerOne, playerTwo].includes(event.target) && !mapsOnePlayer.contains(event.target)) {
+		mapsOnePlayer.classList.remove("active")
+	}
+
+	// removes active class from two player map selection
+	if (![buttonTwoPlayer, playerOne, playerTwo].includes(event.target) && !mapsTwoPlayer.contains(event.target)) {
+		mapsTwoPlayer.classList.remove("active")
 	}
 }
 
@@ -377,27 +478,34 @@ buttonOnePlayer.onclick = () => {
 	mapsOnePlayer.classList.toggle("active")
 }
 buttonOnePlayer.onmouseover = () => {
-	playerOne.style.opacity = 1
-	playerOne.style.marginBottom = "10px"
+	playerOne.classList.add("active")
 }
 buttonOnePlayer.onmouseout = () => {
-	playerOne.style.opacity = 0.5
-	playerOne.style.marginBottom = "0"
+	playerOne.classList.remove("active")
 }
 
 buttonTwoPlayer.onclick = () => {
-	game.multiplayer = true
-	game.start()
+	mapsTwoPlayer.classList.toggle("active")
 }
 buttonTwoPlayer.onmouseover = () => {
-	playerOne.style.opacity = 1
-	playerOne.style.marginBottom = "10px"
-	playerTwo.style.opacity = 1
-	playerTwo.style.marginBottom = "10px"
+	playerOne.classList.add("active")
+	playerTwo.classList.add("active")
 }
 buttonTwoPlayer.onmouseout = () => {
-	playerOne.style.opacity = 0.5
-	playerOne.style.marginBottom = "0"
-	playerTwo.style.opacity = 0.5
-	playerTwo.style.marginBottom = "0"
+	playerOne.classList.remove("active")
+	playerTwo.classList.remove("active")
+}
+
+// info
+const infoBtn = getElement("#info-btn")
+const infoText = getElement("#info-text")
+
+infoBtn.onclick = () => {
+	infoBtn.classList.toggle("active")
+	infoText.classList.toggle("active")
+}
+
+infoText.onclick = () => {
+	infoBtn.classList.remove("active")
+	infoText.classList.remove("active")
 }
