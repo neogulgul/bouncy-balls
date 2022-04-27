@@ -109,8 +109,10 @@ const game = {
 		context = canvas.getContext("2d")
 		game.loadmap(map1)
 
-		let player = new Player(getTexture("player_green.svg"), 0, 0, [])
-		game.objects.push(player)
+		let player1 = new Player(0, 0, keymap.player1, "green")
+		game.objects.push(player1)
+		let player2 = new Player(0, 0, keymap.player2, "red")
+		game.objects.push(player2)
 	},
 	loadmap: (map) => {
 		for (let y = 0; y < map.length; y++) {
@@ -130,8 +132,7 @@ const game = {
 ================================================== */
 
 class Player {
-	constructor(texture, x, y, keys) {
-		this.texture = texture
+	constructor(x, y, keys, color) {
 		this.position = {
 			x: x,
 			y: y
@@ -157,15 +158,87 @@ class Player {
 			left: false,
 			right: false
 		}
-		this.shoot = false
+		this.shooting = false
 		this.keys = keys
+		this.color = color
+		this.type = "player"
+	}
+
+	shoot() {
+		let ball = new Ball(getTexture(`ball_${this.color}.svg`), this.position.x, this.position.y)
+		game.objects.push(ball)
 	}
 
 	draw() {
+		// acceleration / deceleration
+		// up
+		if (this.move.up) {
+			this.velocity.y -= this.acceleration
+		} else if (this.velocity.y < 0) {
+			this.velocity.y += this.deceleration
+		}
+		// down
+		if (this.move.down) {
+			this.velocity.y += this.acceleration
+		} else if (this.velocity.y > 0) {
+			this.velocity.y -= this.deceleration
+		}
+		// left
+		if (this.move.left) {
+			this.velocity.x -= this.acceleration
+		} else if (this.velocity.x < 0) {
+			this.velocity.x += this.deceleration
+		}
+		// right
+		if (this.move.right) {
+			this.velocity.x += this.acceleration
+		} else if (this.velocity.x > 0) {
+			this.velocity.x -= this.deceleration
+		}
+		// up && down
+		if (this.move.up && this.move.down) {
+			if (this.velocity.y < 0) {
+				this.velocity.y += this.deceleration
+			} else if (this.velocity.y > 0) {
+				this.velocity.y -= this.deceleration
+			}
+		}
+		// left && right
+		if (this.move.left && this.move.right) {
+			if (this.velocity.x < 0) {
+				this.velocity.x += this.deceleration
+			} else if (this.velocity.x > 0) {
+				this.velocity.x -= this.deceleration
+			}
+		}
+
+		// limiting maxVelocity
+		// up
+		if (this.velocity.y < -this.maxVelocity) {
+			this.velocity.y = -this.maxVelocity
+		}
+		// down
+		if (this.velocity.y > this.maxVelocity) {
+			this.velocity.y = this.maxVelocity
+		}
+		// left
+		if (this.velocity.x < -this.maxVelocity) {
+			this.velocity.x = -this.maxVelocity
+		}
+		// right
+		if (this.velocity.x > this.maxVelocity) {
+			this.velocity.x = this.maxVelocity
+		}
+
+		// shoot
+		if (this.shooting) {
+			this.shoot()
+		}
+
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
-		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
+		context.drawImage(getTexture(`player_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
@@ -176,8 +249,8 @@ class Ball {
 			x: x,
 			y: y
 		}
-		this.width = BLOCKLENGTH / 10
-		this.heigth = BLOCKLENGTH / 10
+		this.width = BLOCKLENGTH / 5
+		this.height = BLOCKLENGTH / 5
 		this.velocity = {
 			x: 0,
 			y: 0
@@ -185,6 +258,7 @@ class Ball {
 	}
 
 	draw() {
+		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
@@ -226,7 +300,7 @@ document.onkeydown = (event) => {
 
 			// shoot
 			if (event.key === object.keys.shoot) {
-				object.shoot = true
+				object.shooting = true
 			}
 		}
 	})
@@ -251,7 +325,7 @@ document.onkeyup = (event) => {
 
 			// shoot
 			if (event.key === object.keys.shoot) {
-				object.shoot = false
+				object.shooting = false
 			}
 		}
 	})

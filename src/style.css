@@ -74,13 +74,13 @@ h1 {
 }
 
 .player-image:first-of-type {
-	left: 0;
-	rotate: 15deg;
+	left: -15px;
+	transform: rotate(15deg);
 }
 
 .player-image:last-of-type {
-	right: 0;
-	rotate: -15deg;
+	right: -15px;
+	transform: rotate(-15deg);
 }
 
 #buttons {
