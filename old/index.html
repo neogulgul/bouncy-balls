@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="icon" href="./favicon.svg">
+	<title>Bouncy Balls</title>
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body>
+	<canvas></canvas>
+	<div id="player" class="info">
+		<div>position.x:<span>0</span></div>
+		<div>position.y:<span>0</span></div>
+		<div>velocity.x:<span>0</span></div>
+		<div>velocity.y:<span>0</span></div>
+	</div>
+	<div id="game" class="info">
+		<div>Points:<span>0</span></div>
+		<div>Wave:<span>0</span></div>
+		<div>Balls:<span>0</span></div>
+		<div>Time:<span>0</span></div>
+		<div id="next-wave">New wave in:<span>0</span></div>
+	</div>
+	<div id="move" class="keys">
+		<p>MOVE</p>
+		<div class="row">
+			<div class="key up">
+				W
+			</div>
+		</div>
+		<div class="row">
+			<div class="key left">
+				A
+			</div>
+			<div class="key down">
+				S
+			</div>
+			<div class="key right">
+				D
+			</div>
+		</div>
+	</div>
+	<div id ="shoot" class="keys">
+		<p>SHOOT</p>
+		<div class="row">
+			<div class="key up">
+				I
+			</div>
+		</div>
+		<div class="row">
+			<div class="key left">
+				J
+			</div>
+			<div class="key down">
+				K
+			</div>
+			<div class="key right">
+				L
+			</div>
+		</div>
+	</div>
+	<script src="./script.js"></script>
+</body>
+</html>

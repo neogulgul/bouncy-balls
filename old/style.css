@@ -1,0 +1,104 @@
+@font-face {
+	font-family: "Enter Command";
+	src: url(./EnterCommand.ttf);
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	font-family: "Enter Command";
+	font-size: 25px;
+	line-height: 100%;
+	user-select: none;
+}
+
+body {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	overflow: hidden;
+}
+
+canvas {
+	max-width: 80vw;
+    max-height: 80vh;
+	border: 0.1vw solid #ddd;
+	background-color: #eee;
+}
+
+.info {
+	position: absolute;
+	width: 150px;
+}
+
+.info div {
+	display: flex;
+	justify-content: space-between;
+}
+
+#player {
+	top: 10px;
+	left: 10px;
+}
+
+#game {
+	top: 10px;
+	right: 10px;
+}
+
+#next-wave {
+	color: red;
+}
+
+.keys {
+	--gap: 5px;
+	position: absolute;
+	bottom: 10px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--gap);
+}
+
+.keys p {
+	text-align: center;
+}
+
+#move {
+	left: 10px;
+}
+
+#shoot {
+	right: 10px;
+}
+
+.row {
+	display: flex;
+	justify-content: center;
+	gap: var(--gap);
+}
+
+.key {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 20px;
+	height: 20px;
+	border: 0.1vw solid #000;
+	background-color: #fff;
+}
+
+.key svg {
+	width: 50%;
+	height: 50%;
+}
+
+.key.active {
+	background-color: #000;
+	color: #fff;
+}
+
+#shoot {
+	border-radius: 50%;
+}
