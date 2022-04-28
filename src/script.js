@@ -3,19 +3,38 @@ function getElement(element) {
 }
 
 function getTexture(src) {
-	image = new Image
+	let image = new Image()
 	image.src = `./textures/${src}`
 	return image
+}
+
+const textures = {
+	player: {
+		green: getTexture("player_green.svg"),
+		red: getTexture("player_red.svg"),
+		gray: getTexture("player_gray.svg")
+	},
+	ball: {
+		green: getTexture("ball_green.svg"),
+		red: getTexture("ball_red.svg"),
+		gray: getTexture("ball_gray.svg")
+	},
+	obstacle: {
+		green: getTexture("obstacle_green.svg"),
+		red: getTexture("obstacle_red.svg"),
+		yellow: getTexture("obstacle_yellow.svg")
+	}
 }
 
 /* ==================================================
 	GAME
 ================================================== */
 
-const BLOCKLENGTH = 1920 / 16
+const DIMENSION = 1920
+const BLOCKLENGTH = DIMENSION / 16
 
 const player1 = {
-	color: "green",
+	texture: textures.player.green,
 	keys: {
 		move: {
 			up: "w",
@@ -28,7 +47,7 @@ const player1 = {
 }
 
 const player2 = {
-	color: "red",
+	texture: textures.player.red,
 	keys: {
 		move: {
 			up: "i",
@@ -49,26 +68,26 @@ r => red obstacle
 y => yellow obstacle
 */
 
-const map1 = [
+const map1 = [ // one player
 	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
-	["g", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", "y", " ", "y", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", "y", "y", "p", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", "y", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", "", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", "p", " ", "g", " ", " ", " ", " ", " ", " ", "g", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g", " ", " ", "g"],
+	["g", " ", "g", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", "g", "g", "g", "g", " ", " ", " ", " ", "g"],
+	["g", " ", " ", "g", " ", " ", "g", "g", "g", "g", "g", "g", " ", " ", " ", "g"],
+	["g", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", "g", "g"],
 	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
 ]
 
-const map2 = [
+const map2 = [ // one player
 	["r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -87,7 +106,7 @@ const map2 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
-const map3 = [
+const map3 = [ // one player
 	["r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -106,7 +125,7 @@ const map3 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
-const map4 = [
+const map4 = [ // two player
 	["r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -125,7 +144,7 @@ const map4 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
-const map5 = [
+const map5 = [ // two player
 	["r", "r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -144,7 +163,7 @@ const map5 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
-const map6 = [
+const map6 = [ // two player
 	["r", "r", "r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -171,16 +190,18 @@ const game = {
 	playing: false,
 	players: 0,
 	objects: [],
-	canvas: undefined,
-	context: undefined,
-	start: (map) => {
+	start: () => {
 		game.playing = true
 		document.body.innerHTML = `<canvas id="game"></canvas>`
 		canvas = getElement("canvas")
 		context = canvas.getContext("2d")
-		canvas.width = 1920
-		canvas.height = 1920
-		game.loadmap(map)
+		canvas.width = DIMENSION
+		canvas.height = DIMENSION
+		game.loadmap(game.map)
+
+		game.objects.forEach((object) => {
+			object.draw()
+		})
 	},
 	loadmap: (map) => {
 		for (let y = 0; y < map.length; y++) {
@@ -192,64 +213,94 @@ const game = {
 					y: y * BLOCKLENGTH
 				}
 				if (square === "p") {
-					player = new Player(position.x, position.y, allPlayers[game.players].color, allPlayers[game.players].keys)
+					player = new Player(allPlayers[game.players].texture, position.x, position.y, allPlayers[game.players].keys)
 					game.objects.push(player)
 					game.players++
 				} else if (square === "g") {
-					obstacle = new Obstacle(position.x, position.y, "green", 0)
+					obstacle = new Obstacle(textures.obstacle.green, position.x, position.y, 0)
 					game.objects.push(obstacle)
 				} else if (square === "r") {
-					obstacle = new Obstacle(position.x, position.y, "red", 0)
+					obstacle = new Obstacle(textures.obstacle.red, position.x, position.y, 0)
 					game.objects.push(obstacle)
 				} else if (square === "y") {
-					obstacle = new Obstacle(position.x, position.y, "yellow", 4)
+					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 4)
 					game.objects.push(obstacle)
 				}
 			}
 		}
 	},
 	render: () => {
-		context.clearRect(0, 0, canvas.width, canvas.height) // clear canvas
-
+		// this loop goes through the current map and looks for spots without obstacles and clears them
+		for (let y = 0; y < game.map.length; y++) {
+			let row = game.map[y]
+			for (let x = 0; x < row.length; x++) {
+				let square = row[x]
+				let position = {
+					x: x * BLOCKLENGTH,
+					y: y * BLOCKLENGTH
+				}
+				if (!["g", "r", "y"].includes(square)) {
+					context.clearRect(position.x, position.y, BLOCKLENGTH, BLOCKLENGTH)
+				}
+			}
+		}
 		game.objects.forEach((object) => {
-			object.draw()
+			if (object.type !== "obstacle") {
+				object.draw()
+			}
 		})
 	},
 	collision: (object) => {
 		game.objects.forEach((obstacle) => {
-			if (obstacle.type === "obstacle") {
+			if (obstacle.type === "obstacle" || obstacle.type === "player" && obstacle.texture !== object.texture) {
 				// note: directions relative to player; top is top of player, bottom is bottom of player, etc.
 				// top
 				if (object.position.x > obstacle.position.x - object.width &&
 					object.position.x < obstacle.position.x + obstacle.width &&
 					object.position.y + object.velocity.y > obstacle.position.y + obstacle.height - object.height &&
 					object.position.y + object.velocity.y < obstacle.position.y + obstacle.height) {
-					object.position.y = obstacle.position.y + obstacle.height
-					object.velocity.y = -object.velocity.y * obstacle.bounce
+					if (object.type === "player") {
+						object.position.y = obstacle.position.y + obstacle.height
+						object.velocity.y = -object.velocity.y * obstacle.bounce
+					} else if (object.type === "ball") {
+						object.velocity.y = -object.velocity.y
+					}
 				}
 				// bottom
 				else if (object.position.x > obstacle.position.x - object.width &&
 					object.position.x < obstacle.position.x + obstacle.width &&
 					object.position.y + object.velocity.y < obstacle.position.y &&
 					object.position.y + object.velocity.y > obstacle.position.y - object.height) {
-					object.position.y = obstacle.position.y - object.height
-					object.velocity.y = -object.velocity.y * obstacle.bounce
+					if (object.type === "player") {
+						object.position.y = obstacle.position.y - object.height
+						object.velocity.y = -object.velocity.y * obstacle.bounce
+					} else if (object.type === "ball") {
+						object.velocity.y = -object.velocity.y
+					}
 				}
 				// left
 				if (object.position.y > obstacle.position.y - object.height &&
 					object.position.y < obstacle.position.y + obstacle.height &&
 					object.position.x + object.velocity.x > obstacle.position.x + obstacle.width - object.width &&
 					object.position.x + object.velocity.x < obstacle.position.x + obstacle.width) {
-					object.position.x = obstacle.position.x + obstacle.width
-					object.velocity.x = -object.velocity.x * obstacle.bounce
+					if (object.type === "player") {
+						object.position.x = obstacle.position.x + obstacle.width
+						object.velocity.x = -object.velocity.x * obstacle.bounce
+					} else if (object.type === "ball") {
+						object.velocity.x = -object.velocity.x
+					}
 				}
 				// right
 				else if (object.position.y > obstacle.position.y - object.height &&
 					object.position.y < obstacle.position.y + obstacle.height &&
 					object.position.x + object.velocity.x < obstacle.position.x &&
 					object.position.x + object.velocity.x > obstacle.position.x - object.width) {
-					object.position.x = obstacle.position.x - object.width
-					object.velocity.x = -object.velocity.x * obstacle.bounce
+					if (object.type === "player") {
+						object.position.x = obstacle.position.x - object.width
+						object.velocity.x = -object.velocity.x * obstacle.bounce
+					} else if (object.type === "ball") {
+						object.velocity.x = -object.velocity.x
+					}
 				}
 			}
 		})
@@ -261,7 +312,8 @@ const game = {
 ================================================== */
 
 class Player {
-	constructor(x, y, color, keys) {
+	constructor(texture, x, y, keys) {
+		this.texture = texture
 		this.width = BLOCKLENGTH / 2
 		this.height = BLOCKLENGTH / 2
 		this.position = {
@@ -287,14 +339,40 @@ class Player {
 			left: false,
 			right: false
 		}
+		this.shootTimer = 0
 		this.shooting = false
 		this.keys = keys
-		this.color = color
 		this.type = "player"
+		this.bounce = 0
 	}
 
 	shoot() {
-		let ball = new Ball(this.position.x + this.width / 2, this.position.y + this.height / 2, this.color)
+		// texture
+		let ballTexture
+		let texturePath = this.texture.getAttribute("src")
+		if (texturePath.includes("green")) {
+			ballTexture = textures.ball.green
+		} else if (texturePath.includes("red")) {
+			ballTexture = textures.ball.red
+		}
+
+		// direction
+		let direction = {
+			x: 0,
+			y: 0
+		}
+		if (this.move.up && !this.move.down) {
+			direction.y = -1
+		} else if (this.move.down && !this.move.up) {
+			direction.y = 1
+		}
+		if (this.move.left) {
+			direction.x = -1
+		} else if (this.move.right) {
+			direction.x = 1
+		}
+
+		let ball = new Ball(ballTexture, this.position.x + this.width / 2, this.position.y + this.height / 2, direction)
 		game.objects.push(ball)
 	}
 
@@ -360,8 +438,16 @@ class Player {
 		}
 
 		// shoot
-		if (this.shooting) {
+		if (this.shooting && this.shootTimer === 0 && (this.move.up || this.move.down || this.move.left || this.move.right)) {
 			this.shoot()
+			this.shootTimer++
+		}
+
+		if (this.shootTimer > 0) {
+			this.shootTimer++
+			if (this.shootTimer === 30) {
+				this.shootTimer = 0
+			}
 		}
 
 		game.collision(this)
@@ -369,23 +455,24 @@ class Player {
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
-		context.drawImage(getTexture(`player_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
+		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
 class Ball {
-	constructor(x, y, color) {
+	constructor(texture, x, y, direction) {
+		this.texture = texture
 		this.width = BLOCKLENGTH / 5
 		this.height = BLOCKLENGTH / 5
 		this.position = {
-			x: x - this.width / 2,
-			y: y - this.height / 2
+			x: x - this.width / 2 + BLOCKLENGTH / 2 * direction.x,
+			y: y - this.height / 2 + BLOCKLENGTH / 2 * direction.y
 		}
+		this.speed = 10
 		this.velocity = {
-			x: 0,
-			y: 0
+			x: this.speed * direction.x,
+			y: this.speed * direction.y
 		}
-		this.color = color
 		this.type = "ball"
 	}
 
@@ -395,25 +482,25 @@ class Ball {
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
-		context.drawImage(getTexture(`ball_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
+		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
 class Obstacle {
-	constructor(x, y, color, bounce) {
-		this.width = BLOCKLENGTH
-		this.height = BLOCKLENGTH
+	constructor(texture, x, y, bounce) {
+		this.texture = texture
 		this.position = {
 			x: x,
 			y: y
 		}
-		this.color = color
+		this.width = BLOCKLENGTH
+		this.height = BLOCKLENGTH
 		this.bounce = bounce
 		this.type = "obstacle"
 	}
 
 	draw() {
-		context.drawImage(getTexture(`obstacle_${this.color}.svg`), this.position.x, this.position.y, this.width, this.height)
+		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
@@ -495,14 +582,13 @@ const canvasMap4 = document.querySelector(".map-selection .map4 canvas")
 const canvasMap5 = document.querySelector(".map-selection .map5 canvas")
 const canvasMap6 = document.querySelector(".map-selection .map6 canvas")
 
-console.log(canvasMap1, canvasMap2, canvasMap3, canvasMap4, canvasMap5, canvasMap6)
-
 // map selection
 const maps = document.querySelectorAll(".map")
 maps.forEach((map) => {
 	map.onclick = () => {
 		let choosenMap = parseInt(map.classList[1].split("map")[1]) - 1
-		game.start(allMaps[choosenMap])
+		game.map = allMaps[choosenMap]
+		game.start()
 	}
 })
 
@@ -523,13 +609,11 @@ document.body.onclick = (event) => {
 		playerOne.src = playerTwoImage
 		playerTwo.src = playerOneImage
 
-		if (player1.color === "green") {
-			player1.color = "red"
-			player2.color = "green"
-		} else if (player1.color === "red") {
-			player1.color = "green"
-			player2.color = "red"
-		}
+		let playerOneTexture = player1.texture
+		let playerTwoTexture = player2.texture
+
+		player1.texture = playerTwoTexture
+		player2.texture = playerOneTexture
 	}
 
 	// removes active class from one player map selection
