@@ -40,6 +40,21 @@ const player2 = {
 	}
 }
 
+const player3 = {
+	color: "gray",
+	keys: {
+		move: {
+			up: "1",
+			down: "2",
+			left: "3",
+			right: "4"
+		},
+		shoot: "5"
+	}
+}
+
+const allPlayers = [player1, player2, player3]
+
 /* map creation:
 p => player
 g => green obstacle
@@ -50,10 +65,10 @@ y => yellow obstacle
 const map1 = [
 	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
 	["g", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", "y", " ", "y", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", "y", "y", "p", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+	["g", " ", "y", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
@@ -67,7 +82,7 @@ const map1 = [
 ]
 
 const map2 = [
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	["r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -86,7 +101,7 @@ const map2 = [
 ]
 
 const map3 = [
-	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	["r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -104,6 +119,65 @@ const map3 = [
 	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 ]
 
+const map4 = [
+	["r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+]
+
+const map5 = [
+	["r", "r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+]
+
+const map6 = [
+	["r", "r", "r", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+	[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+]
+
+const allMaps = [map1, map2, map3, map4, map5, map6]
+
 let canvas, context, player, ball, obstacle
 
 const game = {
@@ -112,14 +186,14 @@ const game = {
 	objects: [],
 	canvas: undefined,
 	context: undefined,
-	start: () => {
+	start: (map) => {
 		game.playing = true
 		document.body.innerHTML = `<canvas id="game"></canvas>`
 		canvas = getElement("canvas")
+		context = canvas.getContext("2d")
 		canvas.width = 1920
 		canvas.height = 1920
-		context = canvas.getContext("2d")
-		game.loadmap(map1)
+		game.loadmap(map)
 	},
 	loadmap: (map) => {
 		for (let y = 0; y < map.length; y++) {
@@ -131,20 +205,17 @@ const game = {
 					y: y * BLOCKLENGTH
 				}
 				if (square === "p") {
-					game.players++
-					player = new Player(position.x, position.y, player1.color, player1.keys)
-					if (game.players > 1) {
-						player = new Player(position.x, position.y, player2.color, player2.keys)
-					}
+					player = new Player(position.x, position.y, allPlayers[game.players].color, allPlayers[game.players].keys)
 					game.objects.push(player)
+					game.players++
 				} else if (square === "g") {
-					obstacle = new Obstacle(position.x, position.y, "green", false)
+					obstacle = new Obstacle(position.x, position.y, "green", 0)
 					game.objects.push(obstacle)
 				} else if (square === "r") {
-					obstacle = new Obstacle(position.x, position.y, "red", false)
+					obstacle = new Obstacle(position.x, position.y, "red", 0)
 					game.objects.push(obstacle)
 				} else if (square === "y") {
-					obstacle = new Obstacle(position.x, position.y, "yellow", true)
+					obstacle = new Obstacle(position.x, position.y, "yellow", 4)
 					game.objects.push(obstacle)
 				}
 			}
@@ -167,7 +238,7 @@ const game = {
 					object.position.y + object.velocity.y > obstacle.position.y + obstacle.height - object.height &&
 					object.position.y + object.velocity.y < obstacle.position.y + obstacle.height) {
 					object.position.y = obstacle.position.y + obstacle.height
-					object.velocity.y = 0
+					object.velocity.y = -object.velocity.y * obstacle.bounce
 				}
 				// bottom
 				else if (object.position.x > obstacle.position.x - object.width &&
@@ -175,7 +246,7 @@ const game = {
 					object.position.y + object.velocity.y < obstacle.position.y &&
 					object.position.y + object.velocity.y > obstacle.position.y - object.height) {
 					object.position.y = obstacle.position.y - object.height
-					object.velocity.y = 0
+					object.velocity.y = -object.velocity.y * obstacle.bounce
 				}
 				// left
 				if (object.position.y > obstacle.position.y - object.height &&
@@ -183,7 +254,7 @@ const game = {
 					object.position.x + object.velocity.x > obstacle.position.x + obstacle.width - object.width &&
 					object.position.x + object.velocity.x < obstacle.position.x + obstacle.width) {
 					object.position.x = obstacle.position.x + obstacle.width
-					object.velocity.x = 0
+					object.velocity.x = -object.velocity.x * obstacle.bounce
 				}
 				// right
 				else if (object.position.y > obstacle.position.y - object.height &&
@@ -191,7 +262,7 @@ const game = {
 					object.position.x + object.velocity.x < obstacle.position.x &&
 					object.position.x + object.velocity.x > obstacle.position.x - object.width) {
 					object.position.x = obstacle.position.x - object.width
-					object.velocity.x = 0
+					object.velocity.x = -object.velocity.x * obstacle.bounce
 				}
 			}
 		})
@@ -236,7 +307,7 @@ class Player {
 	}
 
 	shoot() {
-		let ball = new Ball(this.position.x, this.position.y, this.color)
+		let ball = new Ball(this.position.x + this.width / 2, this.position.y + this.height / 2, this.color)
 		game.objects.push(ball)
 	}
 
@@ -317,12 +388,12 @@ class Player {
 
 class Ball {
 	constructor(x, y, color) {
-		this.position = {
-			x: x,
-			y: y
-		}
 		this.width = BLOCKLENGTH / 5
 		this.height = BLOCKLENGTH / 5
+		this.position = {
+			x: x - this.width / 2,
+			y: y - this.height / 2
+		}
 		this.velocity = {
 			x: 0,
 			y: 0
@@ -343,14 +414,14 @@ class Ball {
 
 class Obstacle {
 	constructor(x, y, color, bounce) {
+		this.width = BLOCKLENGTH
+		this.height = BLOCKLENGTH
 		this.position = {
 			x: x,
 			y: y
 		}
-		this.width = BLOCKLENGTH
-		this.height = BLOCKLENGTH
 		this.color = color
-		this.bounce = bounce // true || false
+		this.bounce = bounce
 		this.type = "obstacle"
 	}
 
@@ -429,15 +500,26 @@ setInterval(() => {
 	MAIN MENU
 ================================================== */
 
-/* 	temporary 	*/
+// todo: create map render for map selection
+const canvasMap1 = document.querySelector(".map-selection .map1 canvas")
+const canvasMap2 = document.querySelector(".map-selection .map2 canvas")
+const canvasMap3 = document.querySelector(".map-selection .map3 canvas")
+const canvasMap4 = document.querySelector(".map-selection .map4 canvas")
+const canvasMap5 = document.querySelector(".map-selection .map5 canvas")
+const canvasMap6 = document.querySelector(".map-selection .map6 canvas")
+
+console.log(canvasMap1, canvasMap2, canvasMap3, canvasMap4, canvasMap5, canvasMap6)
+
+// map selection
 const maps = document.querySelectorAll(".map")
 maps.forEach((map) => {
 	map.onclick = () => {
-		game.start()
+		let choosenMap = parseInt(map.classList[1].split("map")[1]) - 1
+		game.start(allMaps[choosenMap])
 	}
 })
-/*				*/
 
+// main menu events
 const buttonOnePlayer = getElement("button.one-player")
 const buttonTwoPlayer = getElement("button.two-player")
 const mapsOnePlayer = getElement(".map-selection.one-player")
