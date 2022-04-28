@@ -12,7 +12,8 @@ function getTexture(src) {
 	GAME
 ================================================== */
 
-const BLOCKLENGTH = 1920 / 16
+const DIMENSION = 728
+const BLOCKLENGTH = DIMENSION / 16
 
 const player1 = {
 	color: "green",
@@ -178,8 +179,8 @@ const game = {
 		document.body.innerHTML = `<canvas id="game"></canvas>`
 		canvas = getElement("canvas")
 		context = canvas.getContext("2d")
-		canvas.width = 1920
-		canvas.height = 1920
+		canvas.width = DIMENSION
+		canvas.height = DIMENSION
 		game.loadmap(map)
 	},
 	loadmap: (map) => {
@@ -209,10 +210,11 @@ const game = {
 		}
 	},
 	render: () => {
-		context.clearRect(0, 0, canvas.width, canvas.height) // clear canvas
-
 		game.objects.forEach((object) => {
-			object.draw()
+			if (object.type === "player" || object.type === "ball") {
+				context.clearRect(object.x, object.y, object.width, object.height)
+				object.draw()
+			}
 		})
 	},
 	collision: (object) => {
@@ -494,8 +496,6 @@ const canvasMap3 = document.querySelector(".map-selection .map3 canvas")
 const canvasMap4 = document.querySelector(".map-selection .map4 canvas")
 const canvasMap5 = document.querySelector(".map-selection .map5 canvas")
 const canvasMap6 = document.querySelector(".map-selection .map6 canvas")
-
-console.log(canvasMap1, canvasMap2, canvasMap3, canvasMap4, canvasMap5, canvasMap6)
 
 // map selection
 const maps = document.querySelectorAll(".map")
