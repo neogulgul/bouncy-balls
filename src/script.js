@@ -207,7 +207,7 @@ const game = {
 					game.objects.push(obstacle)
 				}
 			}
-		}
+		} 
 	},
 	render: () => {
 		game.objects.forEach((object) => {
