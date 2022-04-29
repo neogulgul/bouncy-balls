@@ -18,7 +18,7 @@
 		<img src="./textures/player_red.svg" alt="player_red" class="player-image">
 		<div id="buttons">
 			<button class="one-player">
-				<span>Highscore: 0</span>
+				<span id="highscore">Highscore: 0</span>
 				One player
 			</button>
 			<button class="two-player">
@@ -56,28 +56,77 @@
 			</div>
 		</div>
 	</div>
-	<svg id="info-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm2-1.645V14h-2v-1.5a1 1 0 0 1 1-1 1.5 1.5 0 1 0-1.471-1.794l-1.962-.393A3.501 3.501 0 1 1 13 13.355z"/></svg>
-		<div id="info-text">
-			<div class="section">
-				<h3>One player</h3>
-				<p>
-					The goal is to get as many points as possible and aim for a highscore.
-					<br>
-					Each wave there is a set of amount of balls you have to shoot until you can proceed.
-					<br>
-					With each wave the difficulty increases, but so does the amount points you gain which increases your score.
-				</p>
+	<svg class="controls btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M17 4a6 6 0 0 1 6 6v4a6 6 0 0 1-6 6H7a6 6 0 0 1-6-6v-4a6 6 0 0 1 6-6h10zm0 2H7a4 4 0 0 0-3.995 3.8L3 10v4a4 4 0 0 0 3.8 3.995L7 18h10a4 4 0 0 0 3.995-3.8L21 14v-4a4 4 0 0 0-3.8-3.995L17 6zm-7 3v2h2v2H9.999L10 15H8l-.001-2H6v-2h2V9h2zm8 4v2h-2v-2h2zm-2-4v2h-2V9h2z"/></svg>
+	<div class="controls container">
+		<h2>Controls</h2>
+		<section>
+			<h3>Player 1</h3>
+			<div class="keys">
+				Move
+				<div class="row">
+					<div class="key">w</div>
+				</div>
+				<div class="row">
+					<div class="key">a</div>
+					<div class="key">s</div>
+					<div class="key">d</div>
+				</div>
 			</div>
-			<div class="section">
-				<h3>Two player</h3>
-				<p>The goal is to kill your opponent.</p>
+			<div class="keys">
+				Shoot
+				<div id="space">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M4 9v4h16V9h2v5a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V9h2z"/></svg>
+				</div>
 			</div>
-			<div class="section">
-				<h3>Credits</h3>
-				<p>Game made by Artin, Leo and Neo. Hope you like it :D</p>
-				<p id="font-credits"><span>Enter Command</span> font from <a href="https://fontenddev.com/">fontenddev.com</a></p>
+		</section>
+		<section>
+			<h3>Player 2</h3>
+			<div class="keys">
+				Move
+				<div class="row">
+					<div class="key">i</div>
+				</div>
+				<div class="row">
+					<div class="key">j</div>
+					<div class="key">k</div>
+					<div class="key">l</div>
+				</div>
 			</div>
-		</div>
+			<div class="keys">
+				Shoot
+				<div id="enter">
+					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M5.828 7l2.536 2.536L6.95 10.95 2 6l4.95-4.95 1.414 1.414L5.828 5H13a8 8 0 1 1 0 16H4v-2h9a6 6 0 1 0 0-12H5.828z"/></svg>
+				</div>
+			</div>
+		</section>
+	</div>
+	<svg class="info btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10zm0-2a8 8 0 1 0 0-16 8 8 0 0 0 0 16zm-1-5h2v2h-2v-2zm2-1.645V14h-2v-1.5a1 1 0 0 1 1-1 1.5 1.5 0 1 0-1.471-1.794l-1.962-.393A3.501 3.501 0 1 1 13 13.355z"/></svg>
+	<div class="info container">
+		<h2>Info</h2>
+		<section>
+			<h3>One player</h3>
+			<p>
+				The goal is to get as many points as possible.
+				<br>
+				Each wave there is a set of amount of balls you have to shoot until you can proceed.
+				<br>
+				With each wave the difficulty increases, but so does the amount points you gain which goes towards your score.
+				<br>
+				Until a ball has bounced on walls two times it cannot hit you.
+				<br>
+				If you get hit you lose.
+			</p>
+		</section>
+		<section>
+			<h3>Two player</h3>
+			<p>The goal is to kill your opponent.</p>
+		</section>
+		<section>
+			<h3>Credits</h3>
+			<p>Game made by Artin, Leo and Neo. Hope you like it :D</p>
+			<p id="font-credits"><span>Enter Command</span> font from <a href="https://fontenddev.com/">fontenddev.com</a></p>
+		</section>
+	</div>
 	<script src="./script.js"></script>
 </body>
 </html>
