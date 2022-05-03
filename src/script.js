@@ -59,7 +59,7 @@ const player2 = {
 			left: "j",
 			right: "l"
 		},
-		shoot: "Enter"
+		shoot: "enter"
 	}
 }
 
@@ -234,7 +234,17 @@ const game = {
 				<div id="ui-time">Time<span>0</span></div>
 			</div>`
 		}
-		document.body.innerHTML = `<canvas id="game"></canvas>${ui}`
+		document.body.innerHTML = `
+		<canvas id="game"></canvas>
+		${ui}
+		<div class="end menu">
+			<button id="home">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M19 21H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9a1 1 0 0 1-1 1zM6 19h12V9.157l-6-5.454-6 5.454V19z"/></svg>
+			</button>
+			<button id="restart">
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></svg>
+			</button>
+		</div>`
 		canvas = getElement("#game")
 		context = canvas.getContext("2d")
 		canvas.width = DIMENSION
@@ -254,6 +264,8 @@ const game = {
 				localStorage.setItem("highscore", game.score)
 			}
 		}
+
+		getElement(".end.menu").style.display = "flex"
 	},
 	updateUi: () => {
 		if (game.players === 1) {
@@ -684,24 +696,24 @@ class Obstacle {
 ================================================== */
 
 document.onkeydown = (event) => {
+	let key = event.key.toLowerCase()
 	game.objects.forEach((object) => {
 		if (object.type === "player") {
 			// move
-			if (event.key === object.keys.move.up) {
+			if (key === object.keys.move.up) {
 				object.move.up = true
 			}
-			if (event.key === object.keys.move.down) {
+			if (key === object.keys.move.down) {
 				object.move.down = true
 			}
-			if (event.key === object.keys.move.left) {
+			if (key === object.keys.move.left) {
 				object.move.left = true
 			}
-			if (event.key === object.keys.move.right) {
+			if (key === object.keys.move.right) {
 				object.move.right = true
 			}
-
 			// shoot
-			if (event.key === object.keys.shoot) {
+			if (key === object.keys.shoot) {
 				object.shooting = true
 			}
 		}
@@ -709,24 +721,24 @@ document.onkeydown = (event) => {
 }
 
 document.onkeyup = (event) => {
+	let key = event.key.toLowerCase()
 	game.objects.forEach((object) => {
 		if (object.type === "player") {
 			// move
-			if (event.key === object.keys.move.up) {
+			if (key === object.keys.move.up) {
 				object.move.up = false
 			}
-			if (event.key === object.keys.move.down) {
+			if (key === object.keys.move.down) {
 				object.move.down = false
 			}
-			if (event.key === object.keys.move.left) {
+			if (key === object.keys.move.left) {
 				object.move.left = false
 			}
-			if (event.key === object.keys.move.right) {
+			if (key === object.keys.move.right) {
 				object.move.right = false
 			}
-
 			// shoot
-			if (event.key === object.keys.shoot) {
+			if (key === object.keys.shoot) {
 				object.shooting = false
 			}
 		}
@@ -876,6 +888,15 @@ document.body.onclick = (event) => {
 	// removes active class from two player map selection
 	if (![buttonTwoPlayer, imagePlayer1, imagePlayer2].includes(event.target) && !mapsTwoPlayer.contains(event.target)) {
 		mapsTwoPlayer.classList.remove("active")
+	}
+
+	// home
+	if (getElement("#home").contains(event.target)) {
+		location.reload()
+	}
+	// restart
+	else if (getElement("#restart").contains(event.target)) {
+		game.start()
 	}
 }
 

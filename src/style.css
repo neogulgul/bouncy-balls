@@ -44,9 +44,8 @@ body {
 	overflow: hidden;
 	background-color: var(--background);
 	color: var(--foreground);
-	background-image: url("background/background.gif");
-	background-repeat: no-repeat;
-	background-position: center bottom;
+	background-image: url(./background.gif);
+	background-position: center;
 	background-size: cover;
 }
 
@@ -154,6 +153,7 @@ button:hover {
 	border-color: var(--foreground);
 	background-color: var(--foreground);
 	color: var(--background);
+	fill: var(--background);
 }
 
 button.one-player {
@@ -243,7 +243,7 @@ button.one-player span {
 	right: 15px;
 }
 
-.container {
+.menu {
 	position: absolute;
 	display: none;
 	width: 100vw;
@@ -255,7 +255,7 @@ button.one-player span {
 	color: var(--background);
 }
 
-.container.active {
+.menu.active {
 	z-index: 10;
 	display: flex;
 	flex-direction: column;
@@ -264,7 +264,7 @@ button.one-player span {
 	gap: 50px;
 }
 
-.info.container section {
+.info.menu section {
 	width: 500px;
 	text-align: justify;
 	line-height: 150%;
@@ -280,7 +280,7 @@ button.one-player span {
 	opacity: 0.6;
 }
 
-.controls.container section {
+.controls.menu section {
 	display: flex;
 	flex-wrap: wrap;
 	justify-content: space-between;
@@ -288,7 +288,7 @@ button.one-player span {
 	gap: 15px;
 }
 
-.controls.container section h3 {
+.controls.menu section h3 {
 	width: 100%;
 	text-align: center;
 }
@@ -364,4 +364,16 @@ button.one-player span {
 	border-left: var(--border);
 	border-right: var(--border);
 	border-radius: 0 0 5px 5px;
+}
+
+.end.menu {
+	justify-content: center;
+	align-items: center;
+	gap: 50px;
+}
+
+.end.menu button {
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
 }
