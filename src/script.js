@@ -192,8 +192,6 @@ let canvas, context, player, ball, obstacle
 
 const game = {
 	playing: false,
-	objects: [],
-	players: 0,
 	algorithms: {
 		balls: () => {
 			return 5 * game.wave
@@ -203,6 +201,8 @@ const game = {
 		}
 	},
 	start: () => {
+		game.objects = []
+		game.players = 0
 		game.time = 0
 
 		let ui
@@ -589,7 +589,10 @@ class Player {
 		}
 
 		// shoot
-		if (this.shooting && this.shootTimer === 0 && game.balls < game.algorithms.balls() && (this.move.up || this.move.down || this.move.left || this.move.right)) {
+		if (this.shooting && this.shootTimer === 0 && (this.move.up || this.move.down || this.move.left || this.move.right)) {
+			if (game.players === 1 && game.balls >= game.algorithms.balls()) {
+				return
+			}
 			this.shoot()
 			game.paused = false
 			this.shootTimer++
