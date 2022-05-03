@@ -192,6 +192,8 @@ let canvas, context, player, ball, obstacle
 
 const game = {
 	playing: false,
+	player1Points: 0,
+	player2Points: 0,
 	algorithms: {
 		balls: () => {
 			return 5 * game.wave
@@ -225,8 +227,6 @@ const game = {
 		}
 		if ([map4, map5, map6].includes(game.map)) {
 			game.players = 2
-			game.player1Points = 0
-			game.player2Points = 0
 			ui = `
 			<div class="game-ui">
 				<div id="ui-player1">Player 1<span>0</span></div>
@@ -262,6 +262,16 @@ const game = {
 		if (game.players === 1) {
 			if (game.score > parseInt(getHighscore()) || getHighscore() === null) {
 				localStorage.setItem("highscore", game.score)
+			}
+		} else {
+			for (let i = 0; i < game.objects.length; i++) {
+				if (game.objects[i].type === "player" && game.objects[i].alive) {
+					if (game.objects[i].keys === player1.keys) {
+						game.player1Points++
+					} else {
+						game.player2Points++
+					}
+				}
 			}
 		}
 
@@ -365,6 +375,7 @@ const game = {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
 						collider.texture === textures.player.red && object.texture === textures.ball.green) {
 						collider.texture = textures.player.gray
+						collider.alive = false
 						game.end()
 					}
 				}
@@ -399,6 +410,7 @@ const game = {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
 						collider.texture === textures.player.red && object.texture === textures.ball.green) {
 						collider.texture = textures.player.gray
+						collider.alive = false
 						game.end()
 					}
 				}
@@ -433,6 +445,7 @@ const game = {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
 						collider.texture === textures.player.red && object.texture === textures.ball.green) {
 						collider.texture = textures.player.gray
+						collider.alive = false
 						game.end()
 					}
 				}
@@ -467,6 +480,7 @@ const game = {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
 						collider.texture === textures.player.red && object.texture === textures.ball.green) {
 						collider.texture = textures.player.gray
+						collider.alive = false
 						game.end()
 					}
 				}
@@ -505,8 +519,8 @@ class Player {
 		this.shooting = false
 		this.keys = keys
 		this.type = "player"
+		this.alive = true
 		this.bounce = 0
-		this.ammo = undefined // define this maybe?
 	}
 
 	shoot() {
@@ -601,10 +615,7 @@ class Player {
 		}
 
 		// shoot
-		if (this.shooting && this.shootTimer === 0 && (this.move.up || this.move.down || this.move.left || this.move.right)) {
-			if (game.players === 1 && game.balls >= game.algorithms.balls()) {
-				return
-			}
+		if (this.shooting && this.shootTimer === 0 && !(game.players === 1 && game.balls >= game.algorithms.balls()) && (this.move.up || this.move.down || this.move.left || this.move.right)) {
 			this.shoot()
 			game.paused = false
 			this.shootTimer++
@@ -655,7 +666,7 @@ class Ball {
 			this.bounces++
 
 			if (game.players === 1) {
-				if (this.bounces === 2) {
+				if (this.bounces === 2) { // changes color of ball
 					if (this.texture === textures.ball.green) {
 						this.texture = textures.ball.red
 					} else if (this.texture === textures.ball.red) {
@@ -663,13 +674,13 @@ class Ball {
 					}
 				}
 			} else {
-				if (this.bounces === 5) {
+				if (this.bounces === 5) { // removes ball
 					for (let i = 0; i < game.objects.length; i++) {
 						if (game.objects[i].index === this.index) {
 							game.objects.splice(i, 1)
 						}
 					}
-				} // should destroy the ball
+				}
 			}
 		}
 
