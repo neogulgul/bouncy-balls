@@ -36,6 +36,7 @@ html {
 }
 
 body {
+	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -50,14 +51,36 @@ body {
 }
 
 canvas {
-	border: var(--border);
-	background-color: #eee;
+	background-color: var(--background);
 }
 
 #game {
 	max-width: 90vw;
 	max-height: 90vh;
 }
+
+.game-ui {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+	width: 200px;
+	padding: 15px;
+	opacity: 0.8;
+	background-color: var(--foreground);
+	color: var(--background);
+}
+
+.game-ui div {
+	display: flex;
+	justify-content: space-between;
+}
+
+#ui-next-wave {
+	display: none;
+	color: red;
+}
+
+/* main menu */
 
 #main-menu {
 	position: relative;
@@ -115,6 +138,9 @@ h3 {
 }
 
 button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	width: 200px;
 	height: 50px;
 	border: var(--border);
@@ -182,7 +208,6 @@ button.one-player span {
 	max-width: 30vh;
 	height: 15vw;
 	max-height: 25vh;
-	border: var(--border);
 }
 
 .map-selection.one-player {
@@ -197,28 +222,30 @@ button.one-player span {
 	transform: translateY(0);
 }
 
-#info-btn {
+.btn {
 	position: absolute;
-	z-index: 10;
 	top: 15px;
-	right: 15px;
 	width: 1em;
 	height: 1em;
 	cursor: pointer;
 }
 
-#info-btn.active {
+.btn.active {
+	z-index: 15;
 	fill: var(--background);
 }
 
-#info-text {
+.controls.btn {
+	left: 15px;
+}
+
+.info.btn {
+	right: 15px;
+}
+
+.container {
 	position: absolute;
 	display: none;
-	flex-wrap: wrap;
-	flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	gap: 50px;
 	width: 100vw;
 	height: 100vh;
 	font-family: "Inter";
@@ -228,11 +255,16 @@ button.one-player span {
 	color: var(--background);
 }
 
-#info-text.active {
+.container.active {
+	z-index: 10;
 	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	gap: 50px;
 }
 
-.section p {
+.info.container section {
 	width: 500px;
 	text-align: justify;
 	line-height: 150%;
@@ -246,4 +278,94 @@ button.one-player span {
 
 #font-credits a:hover {
 	opacity: 0.6;
+<<<<<<< HEAD
 }
+=======
+}
+
+.controls.container section {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	align-items: center;
+	gap: 15px;
+}
+
+.controls.container section h3 {
+	width: 100%;
+	text-align: center;
+}
+
+.keys {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 5px;
+}
+
+.row {
+	display: flex;
+	justify-content: center;
+	gap: 5px;
+}
+
+.key {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 50px;
+	height: 50px;
+	border: var(--border);
+	border-radius: 5px;
+	text-transform: uppercase;
+}
+
+#space {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 150px;
+	height: 50px;
+	border: var(--border);
+	border-radius: 5px;
+	fill: var(--background);
+}
+
+#enter {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 100px;
+	height: 60px;
+	border-top: var(--border);
+	border-right: var(--border);
+	fill: var(--background);
+	border-radius: 5px 5px 0 0;
+}
+
+#enter::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	width: 40%;
+	height: 100%;
+	border-top: var(--border);
+	border-bottom: var(--border);
+	border-left: var(--border);
+	border-radius: 5px 0 0 5px;
+}
+
+#enter::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	right: -1px;
+	width: calc(60% - 1px);
+	height: 125%;
+	border-bottom: var(--border);
+	border-left: var(--border);
+	border-right: var(--border);
+	border-radius: 0 0 5px 5px;
+}
+>>>>>>> neos_branch
