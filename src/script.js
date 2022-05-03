@@ -34,11 +34,7 @@ const textures = {
 	GAME
 ================================================== */
 
-<<<<<<< HEAD
-const DIMENSION = 728
-=======
 const DIMENSION = 1920
->>>>>>> neos_branch
 const BLOCKLENGTH = DIMENSION / 16
 
 const player1 = {
@@ -243,9 +239,6 @@ const game = {
 		context = canvas.getContext("2d")
 		canvas.width = DIMENSION
 		canvas.height = DIMENSION
-<<<<<<< HEAD
-		game.loadmap(map)
-=======
 		game.loadmap(game.map)
 		game.objects.forEach((object) => {
 			object.draw()
@@ -278,7 +271,6 @@ const game = {
 			getElement("#ui-player2 span").innerText = game.player2Points
 			getElement("#ui-time span").innerText = Math.floor(game.time)
 		}
->>>>>>> neos_branch
 	},
 	loadmap: (map) => {
 		let players = 0
@@ -308,11 +300,6 @@ const game = {
 		} 
 	},
 	render: () => {
-<<<<<<< HEAD
-		game.objects.forEach((object) => {
-			if (object.type === "player" || object.type === "ball") {
-				context.clearRect(object.x, object.y, object.width, object.height)
-=======
 		// this loop goes through the current map and looks for spots without obstacles and clears them
 		for (let y = 0; y < game.map.length; y++) {
 			let row = game.map[y]
@@ -329,7 +316,6 @@ const game = {
 		}
 		game.objects.forEach((object) => {
 			if (object.type !== "obstacle") {
->>>>>>> neos_branch
 				object.draw()
 			}
 		})
@@ -805,8 +791,6 @@ if (getHighscore() !== null) {
 	getElement("#highscore").innerText = `Highscore: ${getHighscore()}`
 }
 
-<<<<<<< HEAD
-=======
 const mapPreviews = document.querySelectorAll(".map-selection .map canvas")
 
 document.body.onload = () => {
@@ -847,7 +831,6 @@ document.body.onload = () => {
 	}
 }
 
->>>>>>> neos_branch
 // map selection
 const maps = document.querySelectorAll(".map")
 maps.forEach((map) => {

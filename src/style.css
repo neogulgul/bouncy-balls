@@ -278,9 +278,6 @@ button.one-player span {
 
 #font-credits a:hover {
 	opacity: 0.6;
-<<<<<<< HEAD
-}
-=======
 }
 
 .controls.container section {
@@ -368,4 +365,3 @@ button.one-player span {
 	border-right: var(--border);
 	border-radius: 0 0 5px 5px;
 }
->>>>>>> neos_branch
