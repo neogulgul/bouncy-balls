@@ -204,6 +204,7 @@ const game = {
 		game.objects = []
 		game.players = 0
 		game.time = 0
+		game.balls = 0
 
 		let ui
 
@@ -211,7 +212,6 @@ const game = {
 			game.players = 1
 			game.score = 0
 			game.wave = 1
-			game.balls = 0
 			game.nextWaveTimer = 10
 			game.paused = true
 			ui = `
@@ -535,7 +535,7 @@ class Player {
 			direction.x = 1
 		}
 
-		let ball = new Ball(ballTexture, this.position.x + this.width / 2, this.position.y + this.height / 2, direction)
+		let ball = new Ball(ballTexture, this.position.x + this.width / 2, this.position.y + this.height / 2, direction, game.balls)
 		game.objects.push(ball)
 	}
 
@@ -628,7 +628,7 @@ class Player {
 }
 
 class Ball {
-	constructor(texture, x, y, direction) {
+	constructor(texture, x, y, direction, index) {
 		this.texture = texture
 		this.width = BLOCKLENGTH / 5
 		this.height = BLOCKLENGTH / 5
@@ -644,6 +644,7 @@ class Ball {
 		this.collision = false
 		this.bounces = 0
 		this.type = "ball"
+		this.index = index
 	}
 
 	draw() {
@@ -662,7 +663,13 @@ class Ball {
 					}
 				}
 			} else {
-				if (this.bounces === 10) {} // should destroy the ball
+				if (this.bounces === 5) {
+					for (let i = 0; i < game.objects.length; i++) {
+						if (game.objects[i].index === this.index) {
+							game.objects.splice(i, 1)
+						}
+					}
+				} // should destroy the ball
 			}
 		}
 
@@ -924,7 +931,7 @@ buttonTwoPlayer.onmouseout = () => {
 
 // controls
 const controlsBtn = getElement(".controls.btn")
-const controlsContainer = getElement(".controls.container")
+const controlsContainer = getElement(".controls.menu")
 
 controlsBtn.onclick = () => {
 	controlsBtn.classList.toggle("active")
@@ -938,7 +945,7 @@ controlsContainer.onclick = () => {
 
 // info
 const infoBtn = getElement(".info.btn")
-const infoContainer = getElement(".info.container")
+const infoContainer = getElement(".info.menu")
 
 infoBtn.onclick = () => {
 	infoBtn.classList.toggle("active")
