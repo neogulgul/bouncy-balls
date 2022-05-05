@@ -26,7 +26,8 @@ const textures = {
 	obstacle: {
 		green: getTexture("obstacle_green.svg"),
 		red: getTexture("obstacle_red.svg"),
-		yellow: getTexture("obstacle_yellow.svg")
+		yellow: getTexture("obstacle_yellow.svg"),
+		white: getTexture("obstacle_white.svg")
 	}
 }
 
@@ -78,7 +79,7 @@ const map1 = [ // one player
 	["g", " ", "p", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
+	["g", " ", " ", "w", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", "g", "g", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
@@ -173,7 +174,7 @@ const map6 = [ // two player
 	["y", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
 	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
 	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+	["y", " ", " ", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
 	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
 	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
 	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
@@ -317,6 +318,9 @@ const game = {
 				} else if (square === "y") {
 					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 5)
 					game.objects.push(obstacle)
+				} else if (square === "w") {
+					obstacle = new Obstacle(textures.obstacle.white, position.x, position.y, 5)
+					game.objects.push(obstacle)
 				}
 			}
 		} 
@@ -331,7 +335,7 @@ const game = {
 					x: x * BLOCKLENGTH,
 					y: y * BLOCKLENGTH
 				}
-				if (!["g", "r", "y"].includes(square)) {
+				if (!["g", "r", "y", "w"].includes(square)) {
 					context.clearRect(position.x, position.y, BLOCKLENGTH, BLOCKLENGTH)
 				}
 			}
@@ -858,6 +862,8 @@ document.body.onload = () => {
 				}
 				else if (square === "y") {
 					context.drawImage(textures.obstacle.yellow, position.x, position.y, previewBlocklength, previewBlocklength)
+				} else if (square === "w") {
+					context.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
 				}
 			}
 		}
