@@ -221,7 +221,6 @@ button.one-player span {
 
 .btn {
 	position: absolute;
-	top: 15px;
 	width: 1em;
 	height: 1em;
 	cursor: pointer;
@@ -233,10 +232,17 @@ button.one-player span {
 }
 
 .controls.btn {
+	top: 15px;
 	left: 15px;
 }
 
 .info.btn {
+	top: 15px;
+	right: 15px;
+}
+
+.edit.btn {
+	bottom: 15px;
 	right: 15px;
 }
 
@@ -369,8 +375,29 @@ button.one-player span {
 	gap: 50px;
 }
 
+.end.menu h1 {
+	position: absolute;
+	top: 25%;
+}
+
 .end.menu button {
 	width: 50px;
 	height: 50px;
 	border-radius: 50%;
+}
+
+.edit.menu {
+	gap: 0;
+}
+
+.grid.row {
+	gap: 0;
+}
+
+.square {
+	min-width: 3vw;
+	min-height: 3vw;
+	border: 1px solid var(--foreground);
+	background-color: var(--background);
+	cursor: pointer;
 }

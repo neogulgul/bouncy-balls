@@ -79,7 +79,7 @@ const map1 = [ // one player
 	["g", " ", "p", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", " ", " ", "g"],
-	["g", " ", " ", "w", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
+	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", "g", "g", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
@@ -239,6 +239,7 @@ const game = {
 		<canvas id="game"></canvas>
 		${ui}
 		<div class="end menu">
+			<h1></h1>
 			<button id="home">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M19 21H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9a1 1 0 0 1-1 1zM6 19h12V9.157l-6-5.454-6 5.454V19z"/></svg>
 			</button>
@@ -264,13 +265,16 @@ const game = {
 			if (game.score > parseInt(getHighscore()) || getHighscore() === null) {
 				localStorage.setItem("highscore", game.score)
 			}
+			getElement(".end.menu h1").innerText = `Score: ${game.score}`
 		} else {
 			for (let i = 0; i < game.objects.length; i++) {
 				if (game.objects[i].type === "player" && game.objects[i].alive) {
 					if (game.objects[i].keys === player1.keys) {
 						game.player1Points++
+						getElement(".end.menu h1").innerText = "Player1 Won"
 					} else {
 						game.player2Points++
+						getElement(".end.menu h1").innerText = "Player2 Won"
 					}
 				}
 			}
@@ -678,7 +682,7 @@ class Ball {
 					}
 				}
 			} else {
-				if (this.bounces === 5) { // removes ball
+				if (this.bounces === 10) { // removes ball
 					for (let i = 0; i < game.objects.length; i++) {
 						if (game.objects[i].index === this.index) {
 							game.objects.splice(i, 1)
@@ -831,6 +835,7 @@ if (getHighscore() !== null) {
 const mapPreviews = document.querySelectorAll(".map-selection .map canvas")
 
 document.body.onload = () => {
+	// render map previews
 	for (let i = 0; i < mapPreviews.length; i++) {
 		let players = 0
 		let previewDimension = 1000
@@ -866,6 +871,15 @@ document.body.onload = () => {
 					context.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
 				}
 			}
+		}
+	}
+
+	// make map editor
+	let size = 16
+	for (let y = 0; y < size; y++) {
+		getElement(".grid").innerHTML += `<div class="grid row"></div>`
+		for (let x = 0; x < size; x++) {
+			getElement(`.grid .grid.row:nth-child(${y + 1})`).innerHTML += `<div class="square"></div>`
 		}
 	}
 }
@@ -948,28 +962,43 @@ buttonTwoPlayer.onmouseout = () => {
 
 // controls
 const controlsBtn = getElement(".controls.btn")
-const controlsContainer = getElement(".controls.menu")
+const controlsMenu = getElement(".controls.menu")
 
 controlsBtn.onclick = () => {
 	controlsBtn.classList.toggle("active")
-	controlsContainer.classList.toggle("active")
+	controlsMenu.classList.toggle("active")
 }
 
-controlsContainer.onclick = () => {
+controlsMenu.onclick = () => {
 	controlsBtn.classList.remove("active")
-	controlsContainer.classList.remove("active")
+	controlsMenu.classList.remove("active")
 }
 
 // info
 const infoBtn = getElement(".info.btn")
-const infoContainer = getElement(".info.menu")
+const infoMenu = getElement(".info.menu")
 
 infoBtn.onclick = () => {
 	infoBtn.classList.toggle("active")
-	infoContainer.classList.toggle("active")
+	infoMenu.classList.toggle("active")
 }
 
-infoContainer.onclick = () => {
+infoMenu.onclick = () => {
 	infoBtn.classList.remove("active")
-	infoContainer.classList.remove("active")
+	infoMenu.classList.remove("active")
+}
+
+// edit
+const editBtn = getElement(".edit.btn")
+const editMenu = getElement(".edit.menu")
+
+editBtn.onclick = () => {
+	editBtn.classList.toggle("active")
+	editMenu.classList.toggle("active")
+}
+
+editMenu.onclick = (event) => {
+	if (event.target === 0) {}
+	editBtn.classList.remove("active")
+	editMenu.classList.remove("active")
 }
