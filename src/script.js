@@ -14,20 +14,20 @@ function getHighscore() {
 
 const textures = {
 	player: {
+		gray: getTexture("player_gray.svg"),
 		green: getTexture("player_green.svg"),
-		red: getTexture("player_red.svg"),
-		gray: getTexture("player_gray.svg")
+		red: getTexture("player_red.svg")
 	},
 	ball: {
+		gray: getTexture("ball_gray.svg"),
 		green: getTexture("ball_green.svg"),
-		red: getTexture("ball_red.svg"),
-		gray: getTexture("ball_gray.svg")
+		red: getTexture("ball_red.svg")
 	},
 	obstacle: {
 		green: getTexture("obstacle_green.svg"),
 		red: getTexture("obstacle_red.svg"),
-		yellow: getTexture("obstacle_yellow.svg"),
-		white: getTexture("obstacle_white.svg")
+		white: getTexture("obstacle_white.svg"),
+		yellow: getTexture("obstacle_yellow.svg")
 	}
 }
 
@@ -189,7 +189,7 @@ const map6 = [ // two player
 
 const mapList = [map1, map2, map3, map4, map5, map6]
 
-let canvas, context, player, ball, obstacle
+let canvas, context, ui, player, ball, obstacle
 
 const game = {
 	playing: false,
@@ -208,14 +208,12 @@ const game = {
 		game.players = 0
 		game.time = 0
 		game.balls = 0
-
-		let ui
+		game.wave = 1
+		game.score = 0
+		game.nextWaveTimer = 10
 
 		if ([map1, map2, map3].includes(game.map)) {
 			game.players = 1
-			game.score = 0
-			game.wave = 1
-			game.nextWaveTimer = 10
 			game.paused = true
 			ui = `
 			<div class="game-ui">
@@ -323,7 +321,7 @@ const game = {
 					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 5)
 					game.objects.push(obstacle)
 				} else if (square === "w") {
-					obstacle = new Obstacle(textures.obstacle.white, position.x, position.y, 5)
+					obstacle = new Obstacle(textures.obstacle.white, position.x, position.y, 1)
 					game.objects.push(obstacle)
 				}
 			}
@@ -339,7 +337,7 @@ const game = {
 					x: x * BLOCKLENGTH,
 					y: y * BLOCKLENGTH
 				}
-				if (!["g", "r", "y", "w"].includes(square)) {
+				if (["p", " "].includes(square)) {
 					context.clearRect(position.x, position.y, BLOCKLENGTH, BLOCKLENGTH)
 				}
 			}
@@ -655,7 +653,7 @@ class Ball {
 			x: x - this.width / 2,
 			y: y - this.height / 2
 		}
-		this.speed = 10 + 1*game.wave
+		this.speed = 10 + 1 * (game.wave - 1)
 		this.velocity = {
 			x: this.speed * direction.x,
 			y: this.speed * direction.y
@@ -793,28 +791,32 @@ function frame() {
 		then = now - (elapsed % fpsInterval)
 
 		if (game.playing) {
-			if (game.balls === game.algorithms.balls()) {
-				getElement("#ui-next-wave").style.display = "flex"
-				game.nextWaveTimer -= 1 / fps
-	
-				if (game.nextWaveTimer < 0) {
-					getElement("#ui-next-wave").style.display = "none"
-					game.balls = 0
-					game.wave++
-	
-					for (let i = 0; i < game.objects.length; i++) {
-						if (game.objects[i].type === "ball") {
-							game.objects.splice(i)
+			if (game.players === 1) {
+				if (game.balls === game.algorithms.balls()) {
+					getElement("#ui-next-wave").style.display = "flex"
+					game.nextWaveTimer -= 1 / fps
+		
+					if (game.nextWaveTimer < 0) {
+						getElement("#ui-next-wave").style.display = "none"
+						game.balls = 0
+						game.wave++
+		
+						for (let i = 0; i < game.objects.length; i++) {
+							if (game.objects[i].type === "ball") {
+								game.objects.splice(i)
+							}
 						}
+		
+						game.nextWaveTimer = 10
+						game.paused = true
 					}
-	
-					game.nextWaveTimer = 10
-					game.paused = true
 				}
-			}
-	
-			if (!game.paused) {
-				game.score += game.algorithms.score()
+
+				if (!game.paused) {
+					game.score += game.algorithms.score()
+					game.time += 1 / fps
+				}
+			} else {
 				game.time += 1 / fps
 			}
 	
