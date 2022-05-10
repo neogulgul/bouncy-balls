@@ -31,6 +31,31 @@ const textures = {
 	}
 }
 
+const editor = {
+	selection: "green",
+	erase: false,
+	map: [
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+	]
+}
+
+console.log(localStorage.getItem("map").split(",")) // todo: split this up into a parsable map
+
 /* ==================================================
 	GAME
 ================================================== */
@@ -720,6 +745,9 @@ class Obstacle {
 ================================================== */
 
 document.onkeydown = (event) => {
+	if (!game.playing) {
+		return
+	}
 	let key = event.key.toLowerCase()
 	game.objects.forEach((object) => {
 		if (object.type === "player") {
@@ -745,6 +773,9 @@ document.onkeydown = (event) => {
 }
 
 document.onkeyup = (event) => {
+	if (!game.playing) {
+		return
+	}
 	let key = event.key.toLowerCase()
 	game.objects.forEach((object) => {
 		if (object.type === "player") {
@@ -876,12 +907,21 @@ document.body.onload = () => {
 		}
 	}
 
-	// make map editor
+	// creating tiles for tile selection
+	Object.keys(textures.obstacle).forEach((obstacle) => {
+		let selected = ""
+		if (obstacle === editor.selection) {
+			selected = " selected"
+		}
+		getElement("#tile-selection").innerHTML += `<img id="${obstacle}" class="tile ${selected}" src="./textures/obstacle_${obstacle}.svg">`
+	})
+
+	// creating grid for map making
 	let size = 16
 	for (let y = 0; y < size; y++) {
-		getElement(".grid").innerHTML += `<div class="grid row"></div>`
+		getElement("#tile-grid").innerHTML += `<div class="row"></div>`
 		for (let x = 0; x < size; x++) {
-			getElement(`.grid .grid.row:nth-child(${y + 1})`).innerHTML += `<div class="square"></div>`
+			getElement(`#tile-grid .row:nth-child(${y + 1})`).innerHTML += `<div id="${x} ${y}" class="tile"></div>`
 		}
 	}
 }
@@ -930,13 +970,85 @@ document.body.onclick = (event) => {
 		mapsTwoPlayer.classList.remove("active")
 	}
 
-	// home
-	if (getElement("#home").contains(event.target)) {
-		location.reload()
+	// change tile selection
+	if (getElement("#tile-selection").contains(event.target) && event.target.classList.contains("tile")) {
+		if (editor.erase) {
+			getElement("#erase").classList.remove("active")
+			editor.erase = false
+		}
+		let color = event.target.id
+		if (color !== editor.selection) {
+			getElement(".tile.selected").classList.remove("selected")
+			getElement(`#${color}`).classList.add("selected")
+			editor.selection = color
+		}
 	}
-	// restart
-	else if (getElement("#restart").contains(event.target)) {
-		game.start()
+
+	// place tiles on grid
+	if (getElement("#tile-grid").contains(event.target) && event.target.classList.contains("tile")) {
+		let coordinate = event.target.id
+		let x = coordinate.split(" ")[0]
+		let y = coordinate.split(" ")[1]
+		if (editor.erase) {
+			editor.map[y][x] = ""
+			event.target.outerHTML = `<div id="${coordinate}" class="tile"></div>`
+		} else {
+			editor.map[y][x] = editor.selection[0]
+			event.target.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_${editor.selection}.svg">`
+		}
+	}
+
+	// toggle erase
+	if (getElement("#erase").contains(event.target)) {
+		getElement("#erase").classList.toggle("active")
+		if (!editor.erase) {
+			editor.erase = true
+		} else {
+			editor.erase = false
+		}
+	}
+
+	// save
+	if (getElement("#save").contains(event.target)) { // todo: able to save
+		localStorage.setItem("map", editor.map)
+	}
+
+	// delete
+	if (getElement("#delete").contains(event.target)) {
+		editor.map = [
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+		]
+
+		document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
+			let coordinate = tile.id
+			tile.outerHTML = `<div id="${coordinate}" class="tile"></div>`
+		})
+	}
+
+	if (game.playing) {
+		// home
+		if (getElement("#home").contains(event.target)) {
+			location.reload()
+		}
+		// restart
+		else if (getElement("#restart").contains(event.target)) {
+			game.start()
+		}
 	}
 }
 
@@ -1000,7 +1112,9 @@ editBtn.onclick = () => {
 }
 
 editMenu.onclick = (event) => {
-	if (event.target === 0) {}
+	if (getElement("#tile-selection").contains(event.target) || getElement("#tile-grid").contains(event.target) || getElement("#tile-buttons").contains(event.target)) {
+		return
+	}
 	editBtn.classList.remove("active")
 	editMenu.classList.remove("active")
 }

@@ -144,6 +144,7 @@ button {
 	cursor: pointer;
 	transition: var(--transition);
 	background-color: var(--background);
+	color: var(--foreground);
 }
 
 button:hover {
@@ -390,14 +391,55 @@ button.one-player span {
 	gap: 0;
 }
 
-.grid.row {
+#tile-buttons {
+	position: absolute;
+	right: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+}
+
+#tile-buttons button {
+	width: 50px;
+}
+
+#erase.active {
+	border-color: red;
+	background-color: red;
+	fill: var(--background);
+}
+
+#tile-grid .row {
 	gap: 0;
 }
 
-.square {
+.tile {
 	min-width: 3vw;
 	min-height: 3vw;
-	border: 1px solid var(--foreground);
+	border: 1px solid rgba(0, 0, 0, 0.1);
 	background-color: var(--background);
 	cursor: pointer;
+}
+
+img.tile {
+	border: none;
+}
+
+#tile-selection {
+	position: absolute;
+	left: 15px;
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+	padding: 25px;
+	border-radius: 25px;
+	background-color: var(--background);
+}
+
+#tile-selection .tile {
+	opacity: 0.6;
+}
+
+#tile-selection .selected {
+	opacity: 1;
 }
