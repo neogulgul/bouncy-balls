@@ -47,6 +47,7 @@ body {
 }
 
 canvas {
+	border: 1px solid var(--foreground);
 	background-color: var(--background);
 }
 
@@ -414,9 +415,11 @@ button.one-player span {
 }
 
 .tile {
+	max-width: 3vw;
 	min-width: 3vw;
+	max-height: 3vw;
 	min-height: 3vw;
-	border: 1px solid rgba(0, 0, 0, 0.1);
+	border: 0.1vw solid rgba(0, 0, 0, 0.1);
 	background-color: var(--background);
 	cursor: pointer;
 }
@@ -442,4 +445,24 @@ img.tile {
 
 #tile-selection .selected {
 	opacity: 1;
+}
+
+.tile.player {
+	border: 0.8vw solid #fff;
+}
+
+#notice {
+	position: absolute;
+	z-index: 100;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 50px;
+	padding: 50px;
+	border-radius: 25px;
+	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
+	font-family: "Inter";
+	font-size: 0.6em;
+	text-transform: none;
+	background-color: var(--background);
 }

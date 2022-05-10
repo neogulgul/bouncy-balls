@@ -19,7 +19,6 @@ const textures = {
 		red: getTexture("player_red.svg")
 	},
 	ball: {
-		gray: getTexture("ball_gray.svg"),
 		green: getTexture("ball_green.svg"),
 		red: getTexture("ball_red.svg")
 	},
@@ -32,8 +31,14 @@ const textures = {
 }
 
 const editor = {
-	selection: "green",
+	selection: {
+		type: "obstacle",
+		color: "green"
+	},
+	players: 0,
 	erase: false,
+	notice: false,
+	saved: false,
 	map: [
 		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
 		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -53,8 +58,6 @@ const editor = {
 		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
 	]
 }
-
-console.log(localStorage.getItem("map").split(",")) // todo: split this up into a parsable map
 
 /* ==================================================
 	GAME
@@ -98,125 +101,127 @@ r => red obstacle
 y => yellow obstacle
 */
 
-const map1 = [ // one player
-	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
-	["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", "p", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", "g", "g", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", "g", "g", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
-	["g", " ", " ", "g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", "g", " ", " ", " ", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
-	["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
-]
-
-const map2 = [ // one player
-	["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", "w", " ", "p", " ", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", "r", " ", " ", " ", " ", "r", "r", " ", "r"],
-	["r", " ", "r", "r", " ", " ", " ", "r", " ", " ", "r", "r", "r", " ", " ", "r"],
-	["r", " ", " ", "r", "r", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", "r"],
-	["r", " ", " ", " ", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", " ", "r"],
-	["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"]
-]
-
-const map3 = [ // one player
-	["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", "y", "y", "y", " ", " ", "y", "y", "y", " ", " ", " ", "y"],
-	["y", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-	["y", " ", " ", " ", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", " ", "y"],
-	["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-	["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
-]
-
-const map4 = [ // two player
-	["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
-	["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
-	["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
-	["g", " ", "g", "p", " ", " ", " ", "g", "r", " ", " ", " ", "p", "r", " ", "r"],
-	["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
-	["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
-	["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-	["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r", "r"],
-	["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"]
-]
-
-const map5 = [ // two player
-	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", "r", "w", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", "p", " ", "g"],
-	["g", " ", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-	["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
-]
-
-const map6 = [ // two player
-	["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "p", " ", "y"],
-	["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-	["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
-]
-
-const mapList = [map1, map2, map3, map4, map5, map6]
+const maps = {
+	onePlayer: {
+		"Playground": [
+			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
+			["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", "p", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
+			[" ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", "g", "g", " ", "g"],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+			[" ", " ", " ", "g", "g", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
+			[" ", " ", " ", "g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			[" ", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", "g", " ", " ", " ", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
+			["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+		],
+		"Blood_Harbor": [
+			["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", "w", " ", "p", " ", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", "r", " ", " ", " ", " ", "r", "r", " ", "r"],
+			["r", " ", "r", "r", " ", " ", " ", "r", " ", " ", "r", "r", "r", " ", " ", "r"],
+			["r", " ", " ", "r", "r", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", "r"],
+			["r", " ", " ", " ", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", " ", "r"],
+			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"]
+		],
+		"Bouncy_Castle": [
+			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", "y", "y", "y", " ", " ", "y", "y", "y", " ", " ", " ", "y"],
+			["y", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
+			["y", " ", " ", " ", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", " ", "y"],
+			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
+			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
+		],
+		"custom1": undefined
+	},
+	twoPlayer: {
+		"Spaceship": [
+			["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
+			["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
+			["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
+			["g", " ", "g", "p", " ", " ", " ", "g", "r", " ", " ", " ", "p", "r", " ", "r"],
+			["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
+			["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
+			["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
+			["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r", "r"],
+			["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"]
+		],
+		"Flowers": [
+			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", "r", "w", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", "p", " ", "g"],
+			["g", " ", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
+			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+		],
+		"Meza_Maze": [
+			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "p", " ", "y"],
+			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
+			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
+		],
+		"custom2": undefined
+	}
+}
 
 let canvas, context, ui, player, ball, obstacle
 
 const game = {
+	started: false,
 	playing: false,
 	player1Points: 0,
 	player2Points: 0,
@@ -229,6 +234,7 @@ const game = {
 		}
 	},
 	start: () => {
+		game.started = true
 		game.objects = []
 		game.players = 0
 		game.time = 0
@@ -237,8 +243,9 @@ const game = {
 		game.score = 0
 		game.nextWaveTimer = 10
 
-		if ([map1, map2, map3].includes(game.map)) {
+		if (Object.keys(maps.onePlayer).includes(game.mapName)) {
 			game.players = 1
+			game.map = maps.onePlayer[game.mapName]
 			game.paused = true
 			ui = `
 			<div class="game-ui">
@@ -249,8 +256,9 @@ const game = {
 				<div id="ui-next-wave">Next wave in<span></span></div>
 			</div>`
 		}
-		if ([map4, map5, map6].includes(game.map)) {
+		else if (Object.keys(maps.twoPlayer).includes(game.mapName)) {
 			game.players = 2
+			game.map = maps.twoPlayer[game.mapName]
 			ui = `
 			<div class="game-ui">
 				<div id="ui-player1">Player 1<span>0</span></div>
@@ -373,9 +381,47 @@ const game = {
 			}
 		})
 	},
-	collision: (collider) => {
+	collision: (collider) => { // note: directions relative to collider; top is top of collider, bottom is bottom of collider, etc.
+		// canvas collision
+		// top
+		if (collider.position.y + collider.velocity.y < 0) {
+			if (collider.type === "player") {
+				collider.position.y = 0
+				collider.velocity.y = 0
+			} else if (collider.type === "ball") {
+				collider.bounce("vertical")
+			}
+		}
+		// bottom
+		else if (collider.position.y + collider.velocity.y > canvas.height - collider.height) {
+			if (collider.type === "player") {
+				collider.position.y = canvas.height - collider.height
+				collider.velocity.y = 0
+			} else if (collider.type === "ball") {
+				collider.bounce("vertical")
+			}
+		}
+		// left
+		if (collider.position.x + collider.velocity.x < 0) {
+			if (collider.type === "player") {
+				collider.position.x = 0
+				collider.velocity.x = 0
+			} else if (collider.type === "ball") {
+				collider.bounce("horizontal")
+			}
+		}
+		// right
+		else if (collider.position.x + collider.velocity.x > canvas.width - collider.width) {
+			if (collider.type === "player") {
+				collider.position.x = canvas.width - collider.width
+				collider.velocity.x = 0
+			} else if (collider.type === "ball") {
+				collider.bounce("horizontal")
+			}
+		}
+
+		// object collision
 		game.objects.forEach((object) => {
-			// note: directions relative to collider; top is top of collider, bottom is bottom of collider, etc.
 			// top
 			if (collider.position.x > object.position.x - collider.width &&
 				collider.position.x < object.position.x + object.width &&
@@ -386,21 +432,7 @@ const game = {
 					collider.velocity.y = -collider.velocity.y * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.velocity.y = -collider.velocity.y
-					collider.collision = true
-					if (Math.random() > 0.5) {
-						if (Math.random() > 0.5) {
-							collider.velocity.x = collider.speed
-						} else {
-							collider.velocity.x = collider.speed * 0.5
-						}
-					} else {
-						if (Math.random() > 0.5) {
-							collider.velocity.x = -collider.speed
-						} else {
-							collider.velocity.x = -collider.speed * 0.5
-						}
-					}
+					collider.bounce("vertical")
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -421,21 +453,7 @@ const game = {
 					collider.velocity.y = -collider.velocity.y * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.velocity.y = -collider.velocity.y
-					collider.collision = true
-					if (Math.random() > 0.5) {
-						if (Math.random() > 0.5) {
-							collider.velocity.x = collider.speed
-						} else {
-							collider.velocity.x = collider.speed * 0.5
-						}
-					} else {
-						if (Math.random() > 0.5) {
-							collider.velocity.x = -collider.speed
-						} else {
-							collider.velocity.x = -collider.speed * 0.5
-						}
-					}
+					collider.bounce("vertical")
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -456,21 +474,7 @@ const game = {
 					collider.velocity.x = -collider.velocity.x * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.velocity.x = -collider.velocity.x
-					collider.collision = true
-					if (Math.random() > 0.5) {
-						if (Math.random() > 0.5) {
-							collider.velocity.y = collider.speed
-						} else {
-							collider.velocity.y = collider.speed * 0.5
-						}
-					} else {
-						if (Math.random() > 0.5) {
-							collider.velocity.y = -collider.speed
-						} else {
-							collider.velocity.y = -collider.speed * 0.5
-						}
-					}
+					collider.bounce("horizontal")
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -491,21 +495,7 @@ const game = {
 					collider.velocity.x = -collider.velocity.x * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.velocity.x = -collider.velocity.x
-					collider.collision = true
-					if (Math.random() > 0.5) {
-						if (Math.random() > 0.5) {
-							collider.velocity.y = collider.speed
-						} else {
-							collider.velocity.y = collider.speed * 0.5
-						}
-					} else {
-						if (Math.random() > 0.5) {
-							collider.velocity.y = -collider.speed
-						} else {
-							collider.velocity.y = -collider.speed * 0.5
-						}
-					}
+					collider.bounce("horizontal")
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -689,6 +679,43 @@ class Ball {
 		this.index = index
 	}
 
+	bounce(direction) {
+		if (direction === "vertical") {
+			this.velocity.y = -this.velocity.y
+			this.collision = true
+			if (Math.random() > 0.5) {
+				if (Math.random() > 0.5) {
+					this.velocity.x = this.speed
+				} else {
+					this.velocity.x = this.speed * 0.5
+				}
+			} else {
+				if (Math.random() > 0.5) {
+					this.velocity.x = -this.speed
+				} else {
+					this.velocity.x = -this.speed * 0.5
+				}
+			}
+		}
+		else if (direction === "horizontal") {
+			this.velocity.x = -this.velocity.x
+			this.collision = true
+			if (Math.random() > 0.5) {
+				if (Math.random() > 0.5) {
+					this.velocity.y = this.speed
+				} else {
+					this.velocity.y = this.speed * 0.5
+				}
+			} else {
+				if (Math.random() > 0.5) {
+					this.velocity.y = -this.speed
+				} else {
+					this.velocity.y = -this.speed * 0.5
+				}
+			}
+		}
+	}
+
 	draw() {
 		game.collision(this)
 
@@ -865,56 +892,105 @@ if (getHighscore() !== null) {
 	getElement("#highscore").innerText = `Highscore: ${getHighscore()}`
 }
 
-const mapPreviews = document.querySelectorAll(".map-selection .map canvas")
-
 document.body.onload = () => {
-	// render map previews
-	for (let i = 0; i < mapPreviews.length; i++) {
-		let players = 0
-		let previewDimension = 1000
-		let previewBlocklength = previewDimension / 16
+	// check for custom maps
+	if (localStorage.getItem("custom1") !== null) {
+		maps.onePlayer.custom1 = []
 	
-		canvas = mapPreviews[i]
-		canvas.width = previewDimension
-		canvas.height = previewDimension
-		context = canvas.getContext("2d")
+		let mapArray = localStorage.getItem("custom1").split(",")
+		for (let y = 0; y < 16; y++) {
+			maps.onePlayer.custom1.push([])
+			for (let x = 0; x < 16; x++) {
+				maps.onePlayer.custom1[y].push(mapArray[x + y * 16])
+			}
+		}
+	}
 	
-		let map = mapList[i]
-		for (let y = 0; y < map.length; y++) {
-			let row = map[y]
-			for (let x = 0; x < row.length; x++) {
-				let square = row[x]
-				let position = {
-					x: x * previewBlocklength,
-					y: y * previewBlocklength
-				}
-				if (square === "p") {
-					context.drawImage(playerList[players].texture, position.x + previewBlocklength / 4, position.y + previewBlocklength / 4, previewBlocklength / 2, previewBlocklength / 2)
-					players++
-				}
-				else if (square === "g") {
-					context.drawImage(textures.obstacle.green, position.x, position.y, previewBlocklength, previewBlocklength)
-				}
-				else if (square === "r") {
-					context.drawImage(textures.obstacle.red, position.x, position.y, previewBlocklength, previewBlocklength)
-				}
-				else if (square === "y") {
-					context.drawImage(textures.obstacle.yellow, position.x, position.y, previewBlocklength, previewBlocklength)
-				} else if (square === "w") {
-					context.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
-				}
+	if (localStorage.getItem("custom2") !== null) {
+		maps.twoPlayer.custom2 = []
+	
+		let mapArray = localStorage.getItem("custom2").split(",")
+		for (let y = 0; y < 16; y++) {
+			maps.twoPlayer.custom2.push([])
+			for (let x = 0; x < 16; x++) {
+				maps.twoPlayer.custom2[y].push(mapArray[x + y * 16])
 			}
 		}
 	}
 
+	Object.keys(maps).forEach((mode) => {
+		Object.keys(maps[mode]).forEach((map) => {
+			let mapArray = maps[mode][map]
+			if (mapArray === undefined) {
+				return
+			}
+			let amount
+			if (mode === "onePlayer") {
+				amount = "one"
+			} else {
+				amount = "two"
+			}
+			getElement(`.map-selection.${amount}-player`).innerHTML += `
+			<div id='${map}' class="map">
+				<h3>${map.replace("_", " ")}</h3>
+				<canvas></canvas>
+			</div>
+			`
+
+			// todo: previews are broken, fix them
+			console.log(map)
+			console.log(mapArray)
+
+			// rendering preview
+			let players = 0
+			let previewDimension = 1000
+			let previewBlocklength = previewDimension / 16
+
+			canvas = getElement(`#${map} canvas`)
+			console.log(`#${map} canvas`)
+			canvas.width = previewDimension
+			canvas.height = previewDimension
+			context = canvas.getContext("2d")
+
+			for (let y = 0; y < mapArray.length; y++) {
+				let row = mapArray[y]
+				for (let x = 0; x < row.length; x++) {
+					let square = row[x]
+					let position = {
+						x: x * previewBlocklength,
+						y: y * previewBlocklength
+					}
+					if (square === "p") {
+						console.log(map, square)
+						context.drawImage(playerList[players].texture, position.x + previewBlocklength / 4, position.y + previewBlocklength / 4, previewBlocklength / 2, previewBlocklength / 2)
+						players++
+					}
+					else if (square === "g") {
+						context.drawImage(textures.obstacle.green, position.x, position.y, previewBlocklength, previewBlocklength)
+					}
+					else if (square === "r") {
+						context.drawImage(textures.obstacle.red, position.x, position.y, previewBlocklength, previewBlocklength)
+					}
+					else if (square === "w") {
+						context.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
+					}
+					else if (square === "y") {
+						context.drawImage(textures.obstacle.yellow, position.x, position.y, previewBlocklength, previewBlocklength)
+					}
+				}
+			}
+		})
+	})
+
 	// creating tiles for tile selection
 	Object.keys(textures.obstacle).forEach((obstacle) => {
 		let selected = ""
-		if (obstacle === editor.selection) {
+		if (obstacle === editor.selection.color) {
 			selected = " selected"
 		}
-		getElement("#tile-selection").innerHTML += `<img id="${obstacle}" class="tile ${selected}" src="./textures/obstacle_${obstacle}.svg">`
+		getElement("#tile-selection").innerHTML += `<img id="obstacle_${obstacle}" class="tile ${selected}" src="./textures/obstacle_${obstacle}.svg">`
 	})
+	getElement("#tile-selection").innerHTML += `<img id="player_white" class="tile" src="./textures/player_white.svg">`
 
 	// creating grid for map making
 	let size = 16
@@ -925,16 +1001,6 @@ document.body.onload = () => {
 		}
 	}
 }
-
-// map selection
-const maps = document.querySelectorAll(".map")
-maps.forEach((map) => {
-	map.onclick = () => {
-		let choosenMap = parseInt(map.classList[1].split("map")[1]) - 1
-		game.map = mapList[choosenMap]
-		game.start()
-	}
-})
 
 // main menu events
 const buttonOnePlayer = getElement("button.one-player")
@@ -970,77 +1036,7 @@ document.body.onclick = (event) => {
 		mapsTwoPlayer.classList.remove("active")
 	}
 
-	// change tile selection
-	if (getElement("#tile-selection").contains(event.target) && event.target.classList.contains("tile")) {
-		if (editor.erase) {
-			getElement("#erase").classList.remove("active")
-			editor.erase = false
-		}
-		let color = event.target.id
-		if (color !== editor.selection) {
-			getElement(".tile.selected").classList.remove("selected")
-			getElement(`#${color}`).classList.add("selected")
-			editor.selection = color
-		}
-	}
-
-	// place tiles on grid
-	if (getElement("#tile-grid").contains(event.target) && event.target.classList.contains("tile")) {
-		let coordinate = event.target.id
-		let x = coordinate.split(" ")[0]
-		let y = coordinate.split(" ")[1]
-		if (editor.erase) {
-			editor.map[y][x] = ""
-			event.target.outerHTML = `<div id="${coordinate}" class="tile"></div>`
-		} else {
-			editor.map[y][x] = editor.selection[0]
-			event.target.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_${editor.selection}.svg">`
-		}
-	}
-
-	// toggle erase
-	if (getElement("#erase").contains(event.target)) {
-		getElement("#erase").classList.toggle("active")
-		if (!editor.erase) {
-			editor.erase = true
-		} else {
-			editor.erase = false
-		}
-	}
-
-	// save
-	if (getElement("#save").contains(event.target)) { // todo: able to save
-		localStorage.setItem("map", editor.map)
-	}
-
-	// delete
-	if (getElement("#delete").contains(event.target)) {
-		editor.map = [
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
-		]
-
-		document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
-			let coordinate = tile.id
-			tile.outerHTML = `<div id="${coordinate}" class="tile"></div>`
-		})
-	}
-
-	if (game.playing) {
+	if (game.started) {
 		// home
 		if (getElement("#home").contains(event.target)) {
 			location.reload()
@@ -1048,6 +1044,145 @@ document.body.onclick = (event) => {
 		// restart
 		else if (getElement("#restart").contains(event.target)) {
 			game.start()
+		}
+	} else if (!editor.notice) {
+		// map selection
+		if (event.target.classList.contains("map") || event.target.closest(".map")) {
+			game.mapName = event.target.id || event.target.closest(".map").id
+			game.start()
+			return
+		}
+
+		// change tile selection
+		if (getElement("#tile-selection").contains(event.target) && event.target.classList.contains("tile")) {
+			if (editor.erase) {
+				getElement("#erase").classList.remove("active")
+				editor.erase = false
+			}
+			let type = event.target.id.split("_")[0]
+			let color = event.target.id.split("_")[1]
+			if (color !== editor.selection) {
+				getElement(".tile.selected").classList.remove("selected")
+				getElement(`#${type}_${color}`).classList.add("selected")
+				editor.selection.type = type
+				editor.selection.color = color
+			}
+		}
+
+		// place tiles on grid
+		if (getElement("#tile-grid").contains(event.target) && event.target.classList.contains("tile")) {
+			let coordinate = event.target.id
+			let x = coordinate.split(" ")[0]
+			let y = coordinate.split(" ")[1]
+			if (event.target.classList.contains("player")) {
+				editor.players--
+			}
+			if (editor.erase) {
+				editor.map[y][x] = " "
+				event.target.outerHTML = `<div id="${coordinate}" class="tile"></div>`
+			} else {
+				if (editor.selection.type === "player") {
+					event.target.outerHTML = `<img id="${coordinate}" class="tile player" src="./textures/player_${editor.selection.color}.svg">`
+					editor.map[y][x] = "p"
+					editor.players++
+				} else {
+					event.target.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_${editor.selection.color}.svg">`
+					editor.map[y][x] = editor.selection.color[0]
+				}
+			}
+		}
+
+		// toggle erase
+		if (getElement("#erase").contains(event.target)) {
+			getElement("#erase").classList.toggle("active")
+			if (!editor.erase) {
+				editor.erase = true
+			} else {
+				editor.erase = false
+			}
+		}
+
+		// copy
+		if (getElement("#copy").contains(event.target)) {
+			editor.notice = true
+			document.body.innerHTML += `
+			<div id="notice">
+				<p>Copied to clipboard.</p>
+				<button id="confirm">Cool.</button>
+			</div>
+			`
+			navigator.clipboard.writeText(JSON.stringify(editor.map))
+		}
+
+		// save
+		if (getElement("#save").contains(event.target)) {
+			if (editor.players === 0 || editor.players > 2) {
+				editor.notice = true
+				let message
+				if (editor.players === 0) {
+					message = "Your map needs to contain at least one player."
+				} else {
+					message = "Your map can not have more than two players."
+				}
+				document.body.innerHTML += `
+				<div id="notice">
+					<p>${message}</p>
+					<button id="confirm">I got it!</button>
+				</div>
+				`
+			} else {
+				if (editor.players === 1) {
+					localStorage.setItem("custom1", editor.map)
+				} else {
+					localStorage.setItem("custom2", editor.map)
+				}
+
+				editor.notice = true
+				editor.saved = true
+				document.body.innerHTML += `
+				<div id="notice">
+					<p>Your map was succesfully saved!</p>
+					<button id="confirm">Nice!</button>
+				</div>
+				`
+			}
+		}
+
+		// delete
+		if (getElement("#delete").contains(event.target)) {
+			editor.players = 0
+			editor.map = [
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
+				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+			]
+
+			document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
+				let coordinate = tile.id
+				tile.outerHTML = `<div id="${coordinate}" class="tile"></div>`
+			})
+		}
+	} else {
+		if (event.target.id === "confirm") {
+			if (editor.saved) {
+				location.reload()
+			} else {
+				editor.notice = false
+				getElement("#notice").remove()
+			}
 		}
 	}
 }
