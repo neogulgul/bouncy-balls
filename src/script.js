@@ -934,12 +934,13 @@ document.body.onload = () => {
 			<div id='${map}' class="map">
 				<h3>${map.replace("_", " ")}</h3>
 				<canvas></canvas>
-			</div>
-			`
-
-			// todo: previews are broken, fix them
-			console.log(map)
-			console.log(mapArray)
+			</div>`
+		})
+		Object.keys(maps[mode]).forEach((map) => {
+			let mapArray = maps[mode][map]
+			if (mapArray === undefined) {
+				return
+			}
 
 			// rendering preview
 			let players = 0
@@ -947,7 +948,6 @@ document.body.onload = () => {
 			let previewBlocklength = previewDimension / 16
 
 			canvas = getElement(`#${map} canvas`)
-			console.log(`#${map} canvas`)
 			canvas.width = previewDimension
 			canvas.height = previewDimension
 			context = canvas.getContext("2d")
@@ -961,7 +961,6 @@ document.body.onload = () => {
 						y: y * previewBlocklength
 					}
 					if (square === "p") {
-						console.log(map, square)
 						context.drawImage(playerList[players].texture, position.x + previewBlocklength / 4, position.y + previewBlocklength / 4, previewBlocklength / 2, previewBlocklength / 2)
 						players++
 					}
@@ -1109,8 +1108,7 @@ document.body.onclick = (event) => {
 			<div id="notice">
 				<p>Copied to clipboard.</p>
 				<button id="confirm">Cool.</button>
-			</div>
-			`
+			</div>`
 			navigator.clipboard.writeText(JSON.stringify(editor.map))
 		}
 
@@ -1128,8 +1126,7 @@ document.body.onclick = (event) => {
 				<div id="notice">
 					<p>${message}</p>
 					<button id="confirm">I got it!</button>
-				</div>
-				`
+				</div>`
 			} else {
 				if (editor.players === 1) {
 					localStorage.setItem("custom1", editor.map)
@@ -1143,8 +1140,7 @@ document.body.onclick = (event) => {
 				<div id="notice">
 					<p>Your map was succesfully saved!</p>
 					<button id="confirm">Nice!</button>
-				</div>
-				`
+				</div>`
 			}
 		}
 
