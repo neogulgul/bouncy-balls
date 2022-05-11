@@ -918,7 +918,9 @@ document.body.onload = () => {
 		}
 	}
 
-	Object.keys(maps).forEach((mode) => {
+	// map previews
+	Object.keys(maps).forEach((mode) => { // note: these loops are divided because whenever an element is added to the DOM all canvases are cleared, so we make sure the canvas elements are all loaded before drawing to them
+		// this loop creates the divs containing the previews
 		Object.keys(maps[mode]).forEach((map) => {
 			let mapArray = maps[mode][map]
 			if (mapArray === undefined) {
@@ -936,6 +938,7 @@ document.body.onload = () => {
 				<canvas></canvas>
 			</div>`
 		})
+		// this loop renders the previews
 		Object.keys(maps[mode]).forEach((map) => {
 			let mapArray = maps[mode][map]
 			if (mapArray === undefined) {
