@@ -94,11 +94,13 @@ const player2 = {
 
 const playerList = [player1, player2]
 
-/* map creation:
-p => player
-g => green obstacle
-r => red obstacle
-y => yellow obstacle
+/*
+map creation:
+	p => player
+	g => green obstacle
+	r => red obstacle
+	w => white obstacle
+	y => yellow obstacle
 */
 
 const maps = {
@@ -196,23 +198,23 @@ const maps = {
 			["g", " ", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
 			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
 		],
-		"Meza_Maze": [
-			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "p", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
+		"Bana_3": [
+			["g","g","g","g","g"," "," "," "," "," "," "," "," ","r","r","r"],
+			["g"," "," "," ","g"," "," "," ","r","r","r"," "," ","r","r","r"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," ","r","p"," "],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+			[" "," "," "," ","g"," "," "," "," "," "," "," "," ","r","r","r"],
+			[" "," "," "," ","g"," "," "," "," "," "," "," "," ","r"," "," "],
+			[" ","g","g","g","g"," "," ","y","y"," "," "," "," ","r"," "," "],
+			[" "," "," "," "," "," "," ","y","y"," "," "," "," "," "," "," "],
+			[" "," "," "," "," "," "," ","y","y"," "," "," "," "," "," "," "],
+			[" "," ","r"," "," "," "," ","y","y"," "," ","g","g","g","g"," "],
+			[" "," ","r"," "," "," "," "," "," "," "," ","g"," "," "," "," "],
+			["r","r","r"," "," "," "," "," "," "," "," ","g"," "," "," "," "],
+			[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			[" ","p","r"," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["r","r","r"," "," ","r","r","r"," "," "," ","g"," "," "," ","g"],
+			["r","r","r"," "," "," "," "," "," "," "," ","g","g","g","g","g"]
 		],
 		"custom2": undefined
 	}
@@ -227,10 +229,10 @@ const game = {
 	player2Points: 0,
 	algorithms: {
 		balls: () => {
-			return 5 * game.wave
+			return 4 + 2 * (game.wave - 1)
 		},
 		score: () => {
-			return game.wave
+			return 2 * game.wave
 		}
 	},
 	start: () => {
@@ -350,11 +352,11 @@ const game = {
 				} else if (square === "r") {
 					obstacle = new Obstacle(textures.obstacle.red, position.x, position.y, 0)
 					game.objects.push(obstacle)
-				} else if (square === "y") {
-					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 5)
-					game.objects.push(obstacle)
 				} else if (square === "w") {
 					obstacle = new Obstacle(textures.obstacle.white, position.x, position.y, 1)
+					game.objects.push(obstacle)
+				} else if (square === "y") {
+					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 5)
 					game.objects.push(obstacle)
 				}
 			}
@@ -908,7 +910,7 @@ document.body.onload = () => {
 	
 	if (localStorage.getItem("custom2") !== null) {
 		maps.twoPlayer.custom2 = []
-	
+
 		let mapArray = localStorage.getItem("custom2").split(",")
 		for (let y = 0; y < 16; y++) {
 			maps.twoPlayer.custom2.push([])
