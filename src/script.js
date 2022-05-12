@@ -1111,7 +1111,7 @@ document.body.onclick = (event) => {
 
 		// copy
 		if (getElement("#copy").contains(event.target)) {
-			notice("Copied to clipboard.", "Cool.")
+			notice("Copied to clipboard.", "Okay.")
 			navigator.clipboard.writeText(JSON.stringify(editor.map))
 		}
 
@@ -1153,8 +1153,7 @@ document.body.onclick = (event) => {
 			}
 
 			document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
-				let coordinate = tile.id
-				tile.outerHTML = `<div id="${coordinate}" class="tile"></div>`
+				tile.outerHTML = `<div id="${tile.id}" class="tile"></div>`
 			})
 		}
 	} else {
@@ -1174,6 +1173,11 @@ document.body.onclick = (event) => {
 				}
 				if (editor.load) {
 					editor.load = false
+					// this clears the grid
+					document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
+						tile.outerHTML = `<div id="${tile.id}" class="tile"></div>`
+					})
+					// this loads the map to the grid
 					for (let y = 0; y < editor.map.length; y++) {
 						row = editor.map[y]
 						for (let x = 0; x < row.length; x++) {
