@@ -1109,11 +1109,9 @@ document.body.onclick = (event) => {
 		// copy
 		if (getElement("#copy").contains(event.target)) {
 			editor.notice = true
-			document.body.innerHTML += `
-			<div id="notice">
-				<p>Copied to clipboard.</p>
-				<button id="confirm">Cool.</button>
-			</div>`
+			getElement("#notice").style.display = "flex"
+			getElement("#notice p").innerText = "Copied to clipboard."
+			getElement("#notice button").innerText = "Cool."
 			navigator.clipboard.writeText(JSON.stringify(editor.map))
 		}
 
@@ -1127,11 +1125,9 @@ document.body.onclick = (event) => {
 				} else {
 					message = "Your map can not have more than two players."
 				}
-				document.body.innerHTML += `
-				<div id="notice">
-					<p>${message}</p>
-					<button id="confirm">I got it!</button>
-				</div>`
+				getElement("#notice").style.display = "flex"
+				getElement("#notice p").innerText = message
+				getElement("#notice button").innerText = "I got it!"
 			} else {
 				if (editor.players === 1) {
 					localStorage.setItem("custom1", editor.map)
@@ -1141,11 +1137,9 @@ document.body.onclick = (event) => {
 
 				editor.notice = true
 				editor.saved = true
-				document.body.innerHTML += `
-				<div id="notice">
-					<p>Your map was succesfully saved!</p>
-					<button id="confirm">Nice!</button>
-				</div>`
+				getElement("#notice").style.display = "flex"
+				getElement("#notice p").innerText = "Your map was succesfully saved!"
+				getElement("#notice button").innerText = "Nice!"
 			}
 		}
 
@@ -1182,7 +1176,7 @@ document.body.onclick = (event) => {
 				location.reload()
 			} else {
 				editor.notice = false
-				getElement("#notice").remove()
+				getElement("#notice").style.display = "none"
 			}
 		}
 	}
@@ -1248,7 +1242,7 @@ editBtn.onclick = () => {
 }
 
 editMenu.onclick = (event) => {
-	if (getElement("#tile-selection").contains(event.target) || getElement("#tile-grid").contains(event.target) || getElement("#tile-buttons").contains(event.target)) {
+	if (getElement("#tile-selection").contains(event.target) || getElement("#tile-grid").contains(event.target) || getElement("#tile-buttons").contains(event.target) || getElement("#notice").contains(event.target)) {
 		return
 	}
 	editBtn.classList.remove("active")

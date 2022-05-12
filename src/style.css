@@ -454,7 +454,7 @@ img.tile {
 #notice {
 	position: absolute;
 	z-index: 100;
-	display: flex;
+	display: none;
 	flex-direction: column;
 	align-items: center;
 	gap: 50px;
@@ -462,7 +462,8 @@ img.tile {
 	border-radius: 25px;
 	box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.2);
 	font-family: "Inter";
-	font-size: 0.6em;
+	font-size: 1em;
 	text-transform: none;
 	background-color: var(--background);
+	color: var(--foreground);
 }
