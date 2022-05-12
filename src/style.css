@@ -58,6 +58,13 @@ canvas {
 	max-height: 90vh;
 }
 
+.home:first-child {
+	position: absolute;
+	top: 15px;
+	left: 15px;
+	cursor: pointer;
+}
+
 .game-ui {
 	position: absolute;
 	top: 15px;
@@ -497,16 +504,18 @@ img.tile {
 .animated {
 	position: absolute;
 	z-index: -100;
-	bottom: 50px;
 }
 
 .animated:first-of-type {
+	bottom: 62.5px;
 	width: 25px;
 	animation: ball 5s infinite;
 }
 
 .animated:last-of-type {
+	bottom: 50px;
 	width: 50px;
+	transform: translateX(100%);
 	animation: player 5s infinite;
 }
 

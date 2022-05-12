@@ -287,11 +287,12 @@ const game = {
 			</div>`
 		}
 		document.body.innerHTML = `
+		<svg class="home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M20 20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9z"/></svg>
 		<canvas id="game"></canvas>
 		${ui}
 		<div class="end menu">
 			<h1></h1>
-			<button id="home">
+			<button class="home">
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M19 21H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9a1 1 0 0 1-1 1zM6 19h12V9.157l-6-5.454-6 5.454V19z"/></svg>
 			</button>
 			<button id="restart">
@@ -1044,7 +1045,7 @@ document.body.onclick = (event) => {
 
 	if (game.started) {
 		// home
-		if (getElement("#home").contains(event.target)) {
+		if (event.target.classList === "home" || event.target.closest(".home")) {
 			location.reload()
 		}
 		// restart
