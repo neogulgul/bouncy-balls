@@ -108,6 +108,7 @@ h2 {
 }
 
 h3 {
+	font-size: 1.2em;
 	text-align: center;
 }
 
@@ -272,6 +273,10 @@ button.one-player span {
 	justify-content: center;
 	align-items: center;
 	gap: 50px;
+}
+
+section h3 {
+	margin-bottom: 25px;
 }
 
 .info.menu section {
