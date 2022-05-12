@@ -22,6 +22,7 @@
 	box-sizing: border-box;
 	font-family: inherit;
 	font-size: inherit;
+	font-weight: inherit;
 	line-height: 100%;
 	text-transform: inherit;
 	color: inherit;
@@ -31,6 +32,7 @@
 html {
 	font-family: "Enter Command";
 	font-size: 30px;
+	font-weight: normal;
 	text-transform: uppercase;
 	color: var(--foreground);
 }
@@ -99,9 +101,7 @@ h2 {
 }
 
 h3 {
-	margin-bottom: 20px;
-	text-decoration: underline;
-	text-underline-offset: 10px;
+	text-align: center;
 }
 
 .player-image {
@@ -171,9 +171,8 @@ button.one-player span {
 	top: 0;
 	z-index: 100;
 	display: flex;
-	justify-content: center;
+	justify-content: space-evenly;
 	align-items: center;
-	gap: 50px;
 	width: 100vw;
 	height: 50vh;
 	padding: 25px;
@@ -192,7 +191,6 @@ button.one-player span {
 	flex-direction: column;
 	align-items: center;
 	gap: 15px;
-	padding: 15px;
 	border-radius: 15px;
 	cursor: pointer;
 	transition: var(--transition);
@@ -295,7 +293,6 @@ button.one-player span {
 
 .controls.menu section h3 {
 	width: 100%;
-	text-align: center;
 }
 
 .keys {
@@ -398,10 +395,30 @@ button.one-player span {
 	display: flex;
 	flex-direction: column;
 	gap: 25px;
+	padding: 25px;
+	border-radius: 25px;
+	background-color: var(--background);
 }
 
 #tile-buttons button {
+	position: relative;
 	width: 50px;
+}
+
+#tile-buttons button:hover span {
+	display: inline;
+}
+
+#tile-buttons button span {
+	position: absolute;
+	left: 0;
+	transform: translateX(calc(-100% - 15px));
+	display: none;
+	padding: 5px 15px;
+	border-radius: 15px;
+	font-size: 0.8em;
+	background-color: var(--foreground);
+	color: var(--background);
 }
 
 #erase.active {
@@ -466,4 +483,53 @@ img.tile {
 	text-transform: none;
 	background-color: var(--background);
 	color: var(--foreground);
+}
+
+#notice div {
+	display: flex;
+	gap: 50px;
+}
+
+.choice:last-child {
+	display: none;
+}
+
+.animated {
+	position: absolute;
+	z-index: -100;
+	bottom: 50px;
+}
+
+.animated:first-of-type {
+	width: 25px;
+	animation: ball 5s infinite;
+}
+
+.animated:last-of-type {
+	width: 50px;
+	animation: player 5s infinite;
+}
+
+@keyframes ball {
+	from {
+		left: -50vw;
+		transform: translateX(-500%);
+	}
+
+	to {
+		left: 100%;
+		transform: translateX(500%);
+	}
+}
+
+@keyframes player {
+	from {
+		left: 0;
+		transform: translateX(-500%);
+	}
+
+	to {
+		left: 100%;
+		transform: translateX(500%);
+	}
 }

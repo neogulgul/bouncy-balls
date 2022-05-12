@@ -12,6 +12,23 @@ function getHighscore() {
 	return localStorage.getItem("highscore")
 }
 
+function notice(text, choice1, choice2) {
+	editor.notice = true
+	getElement("#notice").style.display = "flex"
+	getElement("#notice p").innerText = text
+	getElement(".choice:first-child").innerText = choice1
+	getElement(".choice:last-child").innerText = choice2 || ""
+	if (getElement(".choice:last-child").innerText !== "") {
+		getElement(".choice:last-child").style.display = "flex"
+	}
+}
+
+function unnotice() {
+	editor.notice = false
+	getElement("#notice").style.display = "none"
+	getElement(".choice:last-child").style.display = "none"
+}
+
 const textures = {
 	player: {
 		gray: getTexture("player_gray.svg"),
@@ -36,26 +53,27 @@ const editor = {
 		color: "green"
 	},
 	players: 0,
-	erase: false,
 	notice: false,
-	saved: false,
+	erase: false,
+	load: false,
+	save: false,
 	map: [
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-		[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+		[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "]
 	]
 }
 
@@ -106,99 +124,99 @@ map creation:
 const maps = {
 	onePlayer: {
 		"Playground": [
-			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
-			["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", "p", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", " ", "g", "g", " ", "g"],
-			[" ", " ", " ", " ", " ", " ", " ", " ", "g", "g", " ", "g", "g", "g", " ", "g"],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-			[" ", " ", " ", "g", "g", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
-			[" ", " ", " ", "g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			[" ", " ", " ", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", "g", " ", " ", " ", "g", "g", " ", " ", "g", "g", "g", "g", " ", " ", "g"],
-			["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", "g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+			["g","g","g","g","g","g","g","g","g","g","g","g","g","g","g","g"],
+			["g"," "," "," ","g","g","g"," "," "," "," "," "," "," "," ","g"],
+			["g"," ","p"," ","g","g","g"," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," ","g","g","g"," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," ","g","g"," ","g"," "," ","g"],
+			["g"," "," "," "," "," "," "," ","g","g"," "," ","g","g"," ","g"],
+			[" "," "," "," "," "," "," "," ","g","g"," ","g","g","g"," ","g"],
+			[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+			[" "," "," "," "," "," "," "," "," "," "," "," "," "," "," "," "],
+			[" "," "," ","g","g","g","g"," "," ","g","g","g","g"," "," ","g"],
+			[" "," "," ","g","g","g","g"," "," "," "," "," "," "," "," ","g"],
+			[" "," "," "," ","g","g","g"," "," "," "," "," "," "," "," ","g"],
+			["g","g"," "," "," ","g","g"," "," ","g","g","g","g"," "," ","g"],
+			["g","g","g"," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g","g","g","g"," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g","g","g","g","g","g","g","g","g","g","g","g","g","g","g","g"]
 		],
 		"Blood_Harbor": [
-			["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", "w", " ", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", "w", " ", "p", " ", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", "r", " ", " ", " ", " ", "r", "r", " ", "r"],
-			["r", " ", "r", "r", " ", " ", " ", "r", " ", " ", "r", "r", "r", " ", " ", "r"],
-			["r", " ", " ", "r", "r", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", "r"],
-			["r", " ", " ", " ", "r", "r", "r", "r", "r", "r", "r", " ", " ", " ", " ", "r"],
-			["r", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r", "r"]
+			["r","r","r","r","r","r","r","r","r","r","r","r","r","r","r","r"],
+			["r"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," ","w"," "," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," ","w"," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," ","w"," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," ","w"," "," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," ","w"," ","p"," "," "," "," "," ","r"],
+			["r"," "," "," "," "," "," ","r"," "," "," "," ","r","r"," ","r"],
+			["r"," ","r","r"," "," "," ","r"," "," ","r","r","r"," "," ","r"],
+			["r"," "," ","r","r","r","r","r","r","r","r","r"," "," "," ","r"],
+			["r"," "," "," ","r","r","r","r","r","r","r"," "," "," "," ","r"],
+			["r"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["r","r","r","r","r","r","r","r","r","r","r","r","r","r","r","r"]
 		],
 		"Bouncy_Castle": [
-			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", "y", "y", "y", " ", " ", "y", "y", "y", " ", " ", " ", "y"],
-			["y", " ", " ", "y", "y", " ", " ", " ", " ", " ", " ", "y", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", "y", " ", " ", " ", " ", " ", " ", " ", " ", "y", " ", " ", "y"],
-			["y", " ", " ", " ", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "y"],
-			["y", " ", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", " ", "y"],
-			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"],
-			["y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y", "y"]
+			["y","y","y","y","y","y","y","y","y","y","y","y","y","y","y","y"],
+			["y"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","y"],
+			["y"," "," "," "," "," "," ","y","y"," "," "," "," "," "," ","y"],
+			["y"," "," "," ","y","y","y"," "," ","y","y","y"," "," "," ","y"],
+			["y"," "," ","y","y"," "," "," "," "," "," ","y","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," ","y"," "," "," "," "," "," "," "," ","y"," "," ","y"],
+			["y"," "," "," "," ","p"," "," "," "," "," "," "," "," "," ","y"],
+			["y"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","y"],
+			["y"," ","y","y","y","y","y","y","y","y","y","y","y","y"," ","y"],
+			["y","y","y","y","y","y","y","y","y","y","y","y","y","y","y","y"],
+			["y","y","y","y","y","y","y","y","y","y","y","y","y","y","y","y"]
 		],
 		"custom1": undefined
 	},
 	twoPlayer: {
 		"Spaceship": [
-			["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
-			["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
-			["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
-			["g", " ", "g", "p", " ", " ", " ", "g", "r", " ", " ", " ", "p", "r", " ", "r"],
-			["g", " ", "g", " ", " ", " ", " ", "g", "r", " ", " ", " ", " ", "r", " ", "r"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r"],
-			["g", "g", "g", " ", " ", "g", " ", " ", " ", " ", "r", " ", " ", "r", "r", "r"],
-			["g", " ", "g", "g", "g", " ", " ", " ", " ", " ", " ", "r", "r", "r", " ", "r"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r"],
-			["g", "g", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "r", "r", "r"],
-			["g", "g", "g", "g", "g", "g", "g", "g", "r", "r", "r", "r", "r", "r", "r", "r"]
+			["g","g","g","g","g","g","g","g","r","r","r","r","r","r","r","r"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["g"," ","g","g","g"," "," "," "," "," "," ","r","r","r"," ","r"],
+			["g","g","g"," "," ","g"," "," "," "," ","r"," "," ","r","r","r"],
+			["g","g"," "," "," "," "," "," "," "," "," "," "," "," ","r","r"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["g"," ","g"," "," "," "," ","g","r"," "," "," "," ","r"," ","r"],
+			["g"," ","g","p"," "," "," ","g","r"," "," "," ","p","r"," ","r"],
+			["g"," ","g"," "," "," "," ","g","r"," "," "," "," ","r"," ","r"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["g","g"," "," "," "," "," "," "," "," "," "," "," "," ","r","r"],
+			["g","g","g"," "," ","g"," "," "," "," ","r"," "," ","r","r","r"],
+			["g"," ","g","g","g"," "," "," "," "," "," ","r","r","r"," ","r"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","r"],
+			["g","g","g"," "," "," "," "," "," "," "," "," "," ","r","r","r"],
+			["g","g","g","g","g","g","g","g","r","r","r","r","r","r","r","r"]
 		],
 		"Flowers": [
-			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", "p", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", "r", "w", "r", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", " ", " ", "r", "r", "r", " ", " ", " ", " ", " ", " ", " ", "p", " ", "g"],
-			["g", " ", " ", " ", "g", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", "g"],
-			["g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g", "g"]
+			["g","g","g","g","g","g","g","g","g","g","g","g","g","g","g","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," ","p"," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," "," "," "," "," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," ","r","r","r"," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," ","r","w","r"," "," "," "," "," "," "," "," "," ","g"],
+			["g"," "," ","r","r","r"," "," "," "," "," "," "," ","p"," ","g"],
+			["g"," "," "," ","g"," "," "," "," "," "," "," "," "," "," ","g"],
+			["g","g","g","g","g","g","g","g","g","g","g","g","g","g","g","g"]
 		],
-		"Bana_3": [
+		"Playground_2": [
 			["g","g","g","g","g"," "," "," "," "," "," "," "," ","r","r","r"],
 			["g"," "," "," ","g"," "," "," ","r","r","r"," "," ","r","r","r"],
 			["g"," "," "," "," "," "," "," "," "," "," "," "," ","r","p"," "],
@@ -220,7 +238,7 @@ const maps = {
 	}
 }
 
-let canvas, context, ui, player, ball, obstacle
+let canvas, context, row, square, ui, player, ball, obstacle
 
 const game = {
 	started: false,
@@ -335,9 +353,9 @@ const game = {
 	loadmap: (map) => {
 		let players = 0
 		for (let y = 0; y < map.length; y++) {
-			let row = map[y]
+			row = map[y]
 			for (let x = 0; x < row.length; x++) {
-				let square = row[x]
+				square = row[x]
 				let position = {
 					x: x * BLOCKLENGTH,
 					y: y * BLOCKLENGTH
@@ -365,9 +383,9 @@ const game = {
 	render: () => {
 		// this loop goes through the current map and looks for spots without obstacles and clears them
 		for (let y = 0; y < game.map.length; y++) {
-			let row = game.map[y]
+			row = game.map[y]
 			for (let x = 0; x < row.length; x++) {
-				let square = row[x]
+				square = row[x]
 				let position = {
 					x: x * BLOCKLENGTH,
 					y: y * BLOCKLENGTH
@@ -897,27 +915,11 @@ if (getHighscore() !== null) {
 document.body.onload = () => {
 	// check for custom maps
 	if (localStorage.getItem("custom1") !== null) {
-		maps.onePlayer.custom1 = []
-	
-		let mapArray = localStorage.getItem("custom1").split(",")
-		for (let y = 0; y < 16; y++) {
-			maps.onePlayer.custom1.push([])
-			for (let x = 0; x < 16; x++) {
-				maps.onePlayer.custom1[y].push(mapArray[x + y * 16])
-			}
-		}
+		maps.onePlayer.custom1 = JSON.parse(localStorage.getItem("custom1"))
 	}
 	
 	if (localStorage.getItem("custom2") !== null) {
-		maps.twoPlayer.custom2 = []
-
-		let mapArray = localStorage.getItem("custom2").split(",")
-		for (let y = 0; y < 16; y++) {
-			maps.twoPlayer.custom2.push([])
-			for (let x = 0; x < 16; x++) {
-				maps.twoPlayer.custom2[y].push(mapArray[x + y * 16])
-			}
-		}
+		maps.twoPlayer.custom2 = JSON.parse(localStorage.getItem("custom2"))
 	}
 
 	// map previews
@@ -958,9 +960,9 @@ document.body.onload = () => {
 			context = canvas.getContext("2d")
 
 			for (let y = 0; y < mapArray.length; y++) {
-				let row = mapArray[y]
+				row = mapArray[y]
 				for (let x = 0; x < row.length; x++) {
-					let square = row[x]
+					square = row[x]
 					let position = {
 						x: x * previewBlocklength,
 						y: y * previewBlocklength
@@ -1001,7 +1003,7 @@ document.body.onload = () => {
 	for (let y = 0; y < size; y++) {
 		getElement("#tile-grid").innerHTML += `<div class="row"></div>`
 		for (let x = 0; x < size; x++) {
-			getElement(`#tile-grid .row:nth-child(${y + 1})`).innerHTML += `<div id="${x} ${y}" class="tile"></div>`
+			getElement(`#tile-grid .row:nth-child(${y + 1})`).innerHTML += `<div id="x${x}y${y}" class="tile"></div>`
 		}
 	}
 }
@@ -1076,8 +1078,8 @@ document.body.onclick = (event) => {
 		// place tiles on grid
 		if (getElement("#tile-grid").contains(event.target) && event.target.classList.contains("tile")) {
 			let coordinate = event.target.id
-			let x = coordinate.split(" ")[0]
-			let y = coordinate.split(" ")[1]
+			let x = coordinate.split("y")[0].split("x")[1]
+			let y = coordinate.split("y")[1]
 			if (event.target.classList.contains("player")) {
 				editor.players--
 			}
@@ -1096,7 +1098,7 @@ document.body.onclick = (event) => {
 			}
 		}
 
-		// toggle erase
+		// erase
 		if (getElement("#erase").contains(event.target)) {
 			getElement("#erase").classList.toggle("active")
 			if (!editor.erase) {
@@ -1108,62 +1110,46 @@ document.body.onclick = (event) => {
 
 		// copy
 		if (getElement("#copy").contains(event.target)) {
-			editor.notice = true
-			getElement("#notice").style.display = "flex"
-			getElement("#notice p").innerText = "Copied to clipboard."
-			getElement("#notice button").innerText = "Cool."
+			notice("Copied to clipboard.", "Cool.")
 			navigator.clipboard.writeText(JSON.stringify(editor.map))
+		}
+
+		// load
+		if (getElement("#load").contains(event.target)) {
+			notice("Which map to load?", "custom1", "custom2")
 		}
 
 		// save
 		if (getElement("#save").contains(event.target)) {
 			if (editor.players === 0 || editor.players > 2) {
-				editor.notice = true
 				let message
 				if (editor.players === 0) {
 					message = "Your map needs to contain at least one player."
 				} else {
 					message = "Your map can not have more than two players."
 				}
-				getElement("#notice").style.display = "flex"
-				getElement("#notice p").innerText = message
-				getElement("#notice button").innerText = "I got it!"
+				notice(message, "I got it!")
 			} else {
 				if (editor.players === 1) {
-					localStorage.setItem("custom1", editor.map)
+					localStorage.setItem("custom1", JSON.stringify(editor.map))
 				} else {
-					localStorage.setItem("custom2", editor.map)
+					localStorage.setItem("custom2", JSON.stringify(editor.map))
 				}
-
-				editor.notice = true
-				editor.saved = true
-				getElement("#notice").style.display = "flex"
-				getElement("#notice p").innerText = "Your map was succesfully saved!"
-				getElement("#notice button").innerText = "Nice!"
+				editor.save = true
+				notice("Your map was succesfully saved!", "Nice!")
 			}
 		}
 
 		// delete
 		if (getElement("#delete").contains(event.target)) {
 			editor.players = 0
-			editor.map = [
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
-				[" ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
-			]
+			for (let y = 0; y < editor.map.length; y++) {
+				row = editor.map[y]
+				for (let x = 0; x < row.length; x++) {
+					square = row[x]
+					square = " "
+				}
+			}
 
 			document.querySelectorAll("#tile-grid .row .tile").forEach((tile) => {
 				let coordinate = tile.id
@@ -1171,12 +1157,46 @@ document.body.onclick = (event) => {
 			})
 		}
 	} else {
-		if (event.target.id === "confirm") {
-			if (editor.saved) {
+		if (getElement(".choice:first-child").contains(event.target) || getElement(".choice:last-child").contains(event.target)) {
+			if (editor.save) {
 				location.reload()
+			} else if (getComputedStyle(getElement(".choice:last-child")).display === "flex") {
+				unnotice()
+				if (getElement(".choice:first-child").contains(event.target) && localStorage.getItem("custom1") !== null) {
+					editor.map = maps.onePlayer.custom1
+					editor.players = 1
+					editor.load = true
+				} else if (getElement(".choice:last-child").contains(event.target) && localStorage.getItem("custom2") !== null) {
+					editor.map = maps.twoPlayer.custom2
+					editor.players = 2
+					editor.load = true
+				}
+				if (editor.load) {
+					editor.load = false
+					for (let y = 0; y < editor.map.length; y++) {
+						row = editor.map[y]
+						for (let x = 0; x < row.length; x++) {
+							square = row[x]
+							let tile = getElement(`#x${x}y${y}`)
+							let coordinate = tile.id
+							if (square === "p") {
+								tile.outerHTML = `<img id="${coordinate}" class="tile player" src="./textures/player_white.svg">`
+							} else if (square === "g") {
+								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_green.svg">`
+							} else if (square === "r") {
+								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_red.svg">`
+							} else if (square === "w") {
+								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_white.svg">`
+							} else if (square === "y") {
+								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_yellow.svg">`
+							}
+						}
+					}
+				} else {
+					notice("Could not find map.", ":(")
+				}
 			} else {
-				editor.notice = false
-				getElement("#notice").style.display = "none"
+				unnotice()
 			}
 		}
 	}
