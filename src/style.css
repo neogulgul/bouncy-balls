@@ -50,10 +50,10 @@ body {
 
 canvas {
 	border: 1px solid var(--foreground);
-	background-color: var(--background);
 }
 
-#game {
+.game {
+	position: absolute;
 	max-width: 90vw;
 	max-height: 90vh;
 }
@@ -100,7 +100,6 @@ canvas {
 h1 {
 	text-align: center;
 	font-size: 3em;
-	letter-spacing: 10px;
 }
 
 h2 {
@@ -170,6 +169,7 @@ button.one-player {
 button.one-player span {
 	position: absolute;
 	top: -1em;
+	white-space: nowrap;
 	pointer-events: none;
 	color: var(--foreground);
 }
@@ -179,19 +179,22 @@ button.one-player span {
 	top: 0;
 	z-index: 100;
 	display: flex;
+	flex-wrap: wrap;
 	justify-content: space-evenly;
-	align-items: center;
+	gap: 25px;
 	width: 100vw;
 	height: 50vh;
 	padding: 25px;
+	overflow-y: scroll;
 	transition: var(--transition);
 	background-color: var(--background-transparent);
 	color: var(--background);
 }
 
 .map-selection h2 {
-	position: absolute;
-	top: 15px;
+	height: 5vh;
+	width: 100%;
+	text-align: center;
 }
 
 .map {
@@ -209,10 +212,9 @@ button.one-player span {
 }
 
 .map canvas {
-	width: 15vw;
-	max-width: 30vh;
-	height: 15vw;
-	max-height: 25vh;
+	width: 25vh;
+	height: 25vh;
+	background-color: var(--background);
 }
 
 .map-selection.one-player {

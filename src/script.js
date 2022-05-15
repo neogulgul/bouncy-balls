@@ -238,7 +238,8 @@ const maps = {
 	}
 }
 
-let canvas, context, row, square, ui, player, ball, obstacle
+let canvas = {}, context = {}
+let row, square, object
 
 const game = {
 	started: false,
@@ -250,7 +251,7 @@ const game = {
 			return 4 + 2 * (game.wave - 1)
 		},
 		score: () => {
-			return 2 * game.wave
+			return game.wave * Math.ceil(game.balls / 2)
 		}
 	},
 	start: () => {
@@ -262,6 +263,7 @@ const game = {
 		game.wave = 1
 		game.score = 0
 		game.nextWaveTimer = 10
+		let ui
 
 		if (Object.keys(maps.onePlayer).includes(game.mapName)) {
 			game.players = 1
@@ -288,7 +290,8 @@ const game = {
 		}
 		document.body.innerHTML = `
 		<svg class="home" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M20 20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9H1l10.327-9.388a1 1 0 0 1 1.346 0L23 11h-3v9z"/></svg>
-		<canvas id="game"></canvas>
+		<canvas class="game background" width="${DIMENSION}" height="${DIMENSION}"></canvas>
+		<canvas class="game foreground" width="${DIMENSION}" height="${DIMENSION}"></canvas>
 		${ui}
 		<div class="end menu">
 			<h1></h1>
@@ -299,15 +302,14 @@ const game = {
 				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path fill="none" d="M0 0h24v24H0z"/><path d="M18.537 19.567A9.961 9.961 0 0 1 12 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10c0 2.136-.67 4.116-1.81 5.74L17 12h3a8 8 0 1 0-2.46 5.772l.997 1.795z"/></svg>
 			</button>
 		</div>`
-		canvas = getElement("#game")
-		context = canvas.getContext("2d")
-		canvas.width = DIMENSION
-		canvas.height = DIMENSION
+		canvas.background = getElement(".game.background")
+		canvas.foreground = getElement(".game.foreground")
+		context.background = canvas.background.getContext("2d")
+		context.foreground = canvas.foreground.getContext("2d")
 		game.loadmap(game.map)
 		game.objects.forEach((object) => {
 			object.draw()
 		})
-
 		game.playing = true
 		frame()
 	},
@@ -361,41 +363,31 @@ const game = {
 					x: x * BLOCKLENGTH,
 					y: y * BLOCKLENGTH
 				}
-				if (square === "p") {
-					player = new Player(playerList[players].texture, position.x, position.y, playerList[players].keys)
-					game.objects.push(player)
-					players++
-				} else if (square === "g") {
-					obstacle = new Obstacle(textures.obstacle.green, position.x, position.y, 0)
-					game.objects.push(obstacle)
-				} else if (square === "r") {
-					obstacle = new Obstacle(textures.obstacle.red, position.x, position.y, 0)
-					game.objects.push(obstacle)
-				} else if (square === "w") {
-					obstacle = new Obstacle(textures.obstacle.white, position.x, position.y, 1)
-					game.objects.push(obstacle)
-				} else if (square === "y") {
-					obstacle = new Obstacle(textures.obstacle.yellow, position.x, position.y, 5)
-					game.objects.push(obstacle)
-				}
-			}
-		} 
-	},
-	render: () => {
-		// this loop goes through the current map and looks for spots without obstacles and clears them
-		for (let y = 0; y < game.map.length; y++) {
-			row = game.map[y]
-			for (let x = 0; x < row.length; x++) {
-				square = row[x]
-				let position = {
-					x: x * BLOCKLENGTH,
-					y: y * BLOCKLENGTH
-				}
-				if (["p", " "].includes(square)) {
-					context.clearRect(position.x, position.y, BLOCKLENGTH, BLOCKLENGTH)
+				if (square !== " ") {
+					switch (square) {
+						case "p":
+							object = new Player(playerList[players].texture, position.x, position.y, playerList[players].keys)
+							players++
+							break
+						case "g":
+							object = new Obstacle(textures.obstacle.green, position.x, position.y, 0)
+							break
+						case "r":
+							object = new Obstacle(textures.obstacle.red, position.x, position.y, 0)
+							break
+						case "w":
+							object = new Obstacle(textures.obstacle.white, position.x, position.y, 2)
+							break
+						case "y":
+							object = new Obstacle(textures.obstacle.yellow, position.x, position.y, 4)
+					}
+					game.objects.push(object)
 				}
 			}
 		}
+	},
+	render: () => {
+		context.foreground.clearRect(0, 0, canvas.foreground.width, canvas.foreground.height)
 		game.objects.forEach((object) => {
 			if (object.type !== "obstacle") {
 				object.draw()
@@ -414,9 +406,9 @@ const game = {
 			}
 		}
 		// bottom
-		else if (collider.position.y + collider.velocity.y > canvas.height - collider.height) {
+		else if (collider.position.y + collider.velocity.y > canvas.foreground.height - collider.height) {
 			if (collider.type === "player") {
-				collider.position.y = canvas.height - collider.height
+				collider.position.y = canvas.foreground.height - collider.height
 				collider.velocity.y = 0
 			} else if (collider.type === "ball") {
 				collider.bounce("vertical")
@@ -432,15 +424,14 @@ const game = {
 			}
 		}
 		// right
-		else if (collider.position.x + collider.velocity.x > canvas.width - collider.width) {
+		else if (collider.position.x + collider.velocity.x > canvas.foreground.width - collider.width) {
 			if (collider.type === "player") {
-				collider.position.x = canvas.width - collider.width
+				collider.position.x = canvas.foreground.width - collider.width
 				collider.velocity.x = 0
 			} else if (collider.type === "ball") {
 				collider.bounce("horizontal")
 			}
 		}
-
 		// object collision
 		game.objects.forEach((object) => {
 			// top
@@ -453,7 +444,7 @@ const game = {
 					collider.velocity.y = -collider.velocity.y * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.bounce("vertical")
+					collider.bounce("vertical", object.bounce)
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -474,7 +465,7 @@ const game = {
 					collider.velocity.y = -collider.velocity.y * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.bounce("vertical")
+					collider.bounce("vertical", object.bounce)
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -495,7 +486,7 @@ const game = {
 					collider.velocity.x = -collider.velocity.x * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.bounce("horizontal")
+					collider.bounce("horizontal", object.bounce)
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -516,7 +507,7 @@ const game = {
 					collider.velocity.x = -collider.velocity.x * object.bounce
 				}
 				else if (collider.type === "ball" && object.type === "obstacle") {
-					collider.bounce("horizontal")
+					collider.bounce("horizontal", object.bounce)
 				}
 				else if (collider.type === "player" && object.type === "ball") {
 					if (collider.texture === textures.player.green && object.texture === textures.ball.red ||
@@ -537,6 +528,7 @@ const game = {
 
 class Player {
 	constructor(texture, x, y, keys) {
+		this.context = context.foreground
 		this.texture = texture
 		this.width = BLOCKLENGTH / 2
 		this.height = BLOCKLENGTH / 2
@@ -562,7 +554,6 @@ class Player {
 		this.keys = keys
 		this.type = "player"
 		this.alive = true
-		this.bounce = 0
 	}
 
 	shoot() {
@@ -591,8 +582,8 @@ class Player {
 			direction.x = 1
 		}
 
-		let ball = new Ball(ballTexture, this.position.x + this.width / 2, this.position.y + this.height / 2, direction, game.balls)
-		game.objects.push(ball)
+		object = new Ball(ballTexture, this.position.x + this.width / 2, this.position.y + this.height / 2, direction, game.balls)
+		game.objects.push(object)
 	}
 
 	draw() {
@@ -676,12 +667,13 @@ class Player {
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
-		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
+		this.context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
 class Ball {
 	constructor(texture, x, y, direction, index) {
+		this.context = context.foreground
 		this.texture = texture
 		this.width = BLOCKLENGTH / 5
 		this.height = BLOCKLENGTH / 5
@@ -700,7 +692,7 @@ class Ball {
 		this.index = index
 	}
 
-	bounce(direction) {
+	bounce(direction, bounce) {
 		if (direction === "vertical") {
 			this.velocity.y = -this.velocity.y
 			this.collision = true
@@ -717,6 +709,7 @@ class Ball {
 					this.velocity.x = -this.speed * 0.5
 				}
 			}
+			this.velocity.x *= 1 + 0.2 * bounce || 1 // 1 if bounce not specified
 		}
 		else if (direction === "horizontal") {
 			this.velocity.x = -this.velocity.x
@@ -734,6 +727,7 @@ class Ball {
 					this.velocity.y = -this.speed * 0.5
 				}
 			}
+			this.velocity.y *= 1 + 0.2 * bounce || 1 // 1 if bounce not specified
 		}
 	}
 
@@ -748,7 +742,7 @@ class Ball {
 				if (this.bounces === 2) { // changes color of ball
 					if (this.texture === textures.ball.green) {
 						this.texture = textures.ball.red
-					} else if (this.texture === textures.ball.red) {
+					} else {
 						this.texture = textures.ball.green
 					}
 				}
@@ -766,12 +760,13 @@ class Ball {
 		this.position.x += this.velocity.x
 		this.position.y += this.velocity.y
 
-		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
+		this.context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
 class Obstacle {
 	constructor(texture, x, y, bounce) {
+		this.context = context.background
 		this.texture = texture
 		this.position = {
 			x: x,
@@ -784,7 +779,7 @@ class Obstacle {
 	}
 
 	draw() {
-		context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
+		this.context.drawImage(this.texture, this.position.x, this.position.y, this.width, this.height)
 	}
 }
 
@@ -955,10 +950,10 @@ document.body.onload = () => {
 			let previewDimension = 1000
 			let previewBlocklength = previewDimension / 16
 
-			canvas = getElement(`#${map} canvas`)
-			canvas.width = previewDimension
-			canvas.height = previewDimension
-			context = canvas.getContext("2d")
+			canvas.preview = getElement(`#${map} canvas`)
+			canvas.preview.width = previewDimension
+			canvas.preview.height = previewDimension
+			context.preview = canvas.preview.getContext("2d")
 
 			for (let y = 0; y < mapArray.length; y++) {
 				row = mapArray[y]
@@ -968,21 +963,24 @@ document.body.onload = () => {
 						x: x * previewBlocklength,
 						y: y * previewBlocklength
 					}
-					if (square === "p") {
-						context.drawImage(playerList[players].texture, position.x + previewBlocklength / 4, position.y + previewBlocklength / 4, previewBlocklength / 2, previewBlocklength / 2)
-						players++
-					}
-					else if (square === "g") {
-						context.drawImage(textures.obstacle.green, position.x, position.y, previewBlocklength, previewBlocklength)
-					}
-					else if (square === "r") {
-						context.drawImage(textures.obstacle.red, position.x, position.y, previewBlocklength, previewBlocklength)
-					}
-					else if (square === "w") {
-						context.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
-					}
-					else if (square === "y") {
-						context.drawImage(textures.obstacle.yellow, position.x, position.y, previewBlocklength, previewBlocklength)
+					if (square !== " ") {
+						switch (square) {
+							case "p":
+								context.preview.drawImage(playerList[players].texture, position.x + previewBlocklength / 4, position.y + previewBlocklength / 4, previewBlocklength / 2, previewBlocklength / 2)
+								players++
+								break
+							case "g":
+								context.preview.drawImage(textures.obstacle.green, position.x, position.y, previewBlocklength, previewBlocklength)
+								break
+							case "r":
+								context.preview.drawImage(textures.obstacle.red, position.x, position.y, previewBlocklength, previewBlocklength)
+								break
+							case "w":
+								context.preview.drawImage(textures.obstacle.white, position.x, position.y, previewBlocklength, previewBlocklength)
+								break
+							case "y":
+								context.preview.drawImage(textures.obstacle.yellow, position.x, position.y, previewBlocklength, previewBlocklength)
+						}
 					}
 				}
 			}
@@ -1184,16 +1182,23 @@ document.body.onclick = (event) => {
 							square = row[x]
 							let tile = getElement(`#x${x}y${y}`)
 							let coordinate = tile.id
-							if (square === "p") {
-								tile.outerHTML = `<img id="${coordinate}" class="tile player" src="./textures/player_white.svg">`
-							} else if (square === "g") {
-								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_green.svg">`
-							} else if (square === "r") {
-								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_red.svg">`
-							} else if (square === "w") {
-								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_white.svg">`
-							} else if (square === "y") {
-								tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_yellow.svg">`
+							if (square !== " ") {
+								switch (square) {
+									case "p":
+										tile.outerHTML = `<img id="${coordinate}" class="tile player" src="./textures/player_white.svg">`
+										break
+									case "g":
+										tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_green.svg">`
+										break
+									case "r":
+										tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_red.svg">`
+										break
+									case "w":
+										tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_white.svg">`
+										break
+									case "y":
+										tile.outerHTML = `<img id="${coordinate}" class="tile" src="./textures/obstacle_yellow.svg">`
+								}
 							}
 						}
 					}
