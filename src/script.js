@@ -47,6 +47,15 @@ const textures = {
 	}
 }
 
+const music = {
+	menu: new Audio("./sound/menu.wav"),
+	game: new Audio("./sound/game.wav"),
+}
+
+// this makes sure the music loops
+music.menu.loop = true
+music.game.loop = true
+
 const editor = {
 	selection: {
 		type: "obstacle",
@@ -729,6 +738,14 @@ class Ball {
 			}
 			this.velocity.y *= 1 + 0.2 * bounce || 1 // 1 if bounce not specified
 		}
+
+		// sound effect
+		let number = Math.ceil(Math.random() * 3)
+		//let sound = new Audio(`./sound/bounce${number}.wav`)
+		let sound = new Audio(`./sound/pong.wav`)
+		sound.play()
+		sound.volume = 0.5
+		sound.remove()
 	}
 
 	draw() {
@@ -909,6 +926,9 @@ if (getHighscore() !== null) {
 }
 
 document.body.onload = () => {
+	// music! :o
+	music.menu.play()
+
 	// check for custom maps
 	if (localStorage.getItem("custom1") !== null) {
 		maps.onePlayer.custom1 = JSON.parse(localStorage.getItem("custom1"))
@@ -1054,6 +1074,8 @@ document.body.onclick = (event) => {
 		// map selection
 		if (event.target.classList.contains("map") || event.target.closest(".map")) {
 			game.mapName = event.target.id || event.target.closest(".map").id
+			music.menu.pause()
+			music.game.play()
 			game.start()
 			return
 		}
