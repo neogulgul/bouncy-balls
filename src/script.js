@@ -740,11 +740,11 @@ class Ball {
 		}
 
 		// sound effect
-		let number = Math.ceil(Math.random() * 3)
+		//let number = Math.ceil(Math.random() * 3)
 		//let sound = new Audio(`./sound/bounce${number}.wav`)
 		let sound = new Audio(`./sound/pong.wav`)
+		sound.volume = 0.3
 		sound.play()
-		sound.volume = 0.5
 		sound.remove()
 	}
 
@@ -1167,8 +1167,7 @@ document.body.onclick = (event) => {
 			for (let y = 0; y < editor.map.length; y++) {
 				row = editor.map[y]
 				for (let x = 0; x < row.length; x++) {
-					square = row[x]
-					square = " "
+					row[x] = " "
 				}
 			}
 
