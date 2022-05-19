@@ -12,7 +12,7 @@
 	--background: #fff;
 	--background-transparent: rgba(0, 0, 0, 0.8);
 	--foreground: #000;
-	--border: 0.1vw solid #bdbdbd;
+	--border: 0.1vw solid rgba(0, 0, 0, 0.2);
 	--transition: 0.3s;
 }
 
@@ -48,8 +48,13 @@ body {
 	color: var(--foreground);
 }
 
+svg {
+	transition: var(--transition);
+	fill: var(--foreground);
+}
+
 canvas {
-	border: 1px solid var(--foreground);
+	border: var(--border);
 }
 
 .game {
@@ -159,6 +164,9 @@ button:hover {
 	border-color: var(--foreground);
 	background-color: var(--foreground);
 	color: var(--background);
+}
+
+button:hover svg {
 	fill: var(--background);
 }
 
@@ -265,7 +273,7 @@ button.one-player span {
 	font-size: 0.6em;
 	text-transform: none;
 	background-color: var(--background-transparent);
-	color: var(--background);
+	color: #fff;
 }
 
 .menu.active {
@@ -450,7 +458,7 @@ section h3 {
 	min-width: 3vw;
 	max-height: 3vw;
 	min-height: 3vw;
-	border: 0.1vw solid rgba(0, 0, 0, 0.1);
+	border: var(--border);
 	background-color: var(--background);
 	cursor: pointer;
 }
@@ -467,6 +475,7 @@ img.tile {
 	gap: 25px;
 	padding: 25px;
 	border-radius: 25px;
+	border: var(--border);
 	background-color: var(--background);
 }
 
@@ -479,7 +488,8 @@ img.tile {
 }
 
 .tile.player {
-	border: 0.8vw solid #fff;
+	padding: 0.7vw;
+	border: var(--border);
 }
 
 #notice {
@@ -508,18 +518,39 @@ img.tile {
 	display: none;
 }
 
+#bomb {
+	bottom: 15px;
+	left: 15px;
+}
+
+#explosion {
+	display: none;
+	position: absolute;
+	animation: explosion 3s;
+}
+
+@keyframes explosion {
+	from {
+		transform: scale(0.1);
+	}
+
+	to {
+		transform: scale(5);
+	}
+}
+
 .animated {
 	position: absolute;
 	z-index: -100;
 }
 
-.animated:first-of-type {
+.animated.ball {
 	bottom: 62.5px;
 	width: 25px;
 	animation: ball 5s infinite;
 }
 
-.animated:last-of-type {
+.animated.player {
 	bottom: 50px;
 	width: 50px;
 	transform: translateX(100%);

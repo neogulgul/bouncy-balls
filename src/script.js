@@ -1297,3 +1297,18 @@ editMenu.onclick = (event) => {
 	editBtn.classList.remove("active")
 	editMenu.classList.remove("active")
 }
+
+// bomb
+const bomb = getElement("#bomb")
+const explosion = getElement("#explosion")
+
+bomb.onclick = () => {
+	explosion.style.display = "inline"
+}
+
+explosion.onanimationend = () => {
+	explosion.style.display = "none"
+	document.documentElement.style.setProperty("--background", "#000")
+	document.documentElement.style.setProperty("--foreground", "#fff")
+	document.documentElement.style.setProperty("--border", "0.1vw solid rgba(255, 255, 255, 0.2)")
+}
