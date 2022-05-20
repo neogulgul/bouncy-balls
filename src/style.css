@@ -196,7 +196,7 @@ button.one-player span {
 	overflow-y: scroll;
 	transition: var(--transition);
 	background-color: var(--background-transparent);
-	color: var(--background);
+	color: #fff;
 }
 
 .map-selection h2 {
@@ -216,7 +216,7 @@ button.one-player span {
 }
 
 .map:hover canvas {
-	box-shadow: 0 0 10px 0 var(--background);
+	box-shadow: 0 0 10px 0 #fff;
 }
 
 .map canvas {
@@ -526,16 +526,66 @@ img.tile {
 #explosion {
 	display: none;
 	position: absolute;
-	animation: explosion 3s;
+	animation: explode 3s;
 }
 
-@keyframes explosion {
+@keyframes explode {
 	from {
-		transform: scale(0.1);
+		width: 0.1vw;
 	}
 
 	to {
-		transform: scale(5);
+		width: 200vw;
+	}
+}
+
+@keyframes implode {
+	from {
+		width: 200vw;
+	}
+
+	to {
+		width: 0.1vw;
+	}
+}
+
+#achievement {
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	transform: translateY(100%);
+	z-index: 1000;
+	display: none;
+	padding: 25px;
+	background: linear-gradient(0deg, rgba(18,18,18,1) 0%, rgba(86,86,86,1) 100%);
+	color: #fff;
+	animation: achievement 3s;
+}
+
+#achievement img {
+	width: 60px;
+	margin-right: 25px;
+	aspect-ratio: 1 / 1;
+	object-fit: contain;
+}
+
+#achievement p {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+@keyframes achievement {
+	10% {
+		transform: translateY(0%);
+	}
+
+	90% {
+		transform: translateY(0%);
+	}
+
+	100% {
+		transform: translateY(100%);
 	}
 }
 
